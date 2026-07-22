@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950">
+<html lang="en" class="h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for Visual Infographics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QRCode.js Library for QR Code Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
@@ -16,447 +18,485 @@
                 extend: {
                     colors: {
                         brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            900: '#1e3a8a',
-                        }
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                        },
+                        cyanAccent: '#06b6d4',
+                        magentaAccent: '#ec4899',
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="h-full text-slate-100 flex flex-col md:flex-row antialiased font-sans">
+<body class="h-full text-slate-800 flex flex-col md:flex-row antialiased font-sans p-2 md:p-6 gap-4">
 
-    <!-- MOBILE TOP BAR -->
-    <div class="md:hidden flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800">
-        <div class="flex items-center gap-2">
-            <div class="p-1.5 bg-brand-600/20 text-brand-500 rounded-lg">
-                <i data-lucide="calculator" class="w-5 h-5"></i>
+    <!-- DESKTOP / MOBILE CONTAINER CARD -->
+    <div class="w-full h-full bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col md:flex-row overflow-hidden">
+
+        <!-- MOBILE TOP BAR -->
+        <div class="md:hidden flex items-center justify-between p-4 bg-slate-50 border-b border-slate-200">
+            <div class="flex items-center gap-2">
+                <div class="p-2 bg-gradient-to-tr from-violet-600 to-indigo-500 text-white rounded-xl shadow-md">
+                    <i data-lucide="calculator" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-base tracking-wide text-slate-900 block">ASG SmartCalc</span>
+                    <span class="text-[10px] text-purple-600 font-semibold tracking-tight block -mt-1">All in one calculator</span>
+                </div>
             </div>
-            <div>
-                <span class="font-bold text-base tracking-wide text-white block">ASG SmartCalc Pro</span>
-                <span class="text-[10px] text-brand-400 font-medium tracking-tight block -mt-1">All in one calculator</span>
-            </div>
+            <select id="mobileTabSelect" onchange="switchTab(this.value)" class="bg-white text-slate-700 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold shadow-sm outline-none focus:ring-2 focus:ring-purple-500">
+                <!-- Populated via JS -->
+            </select>
         </div>
-        <select id="mobileTabSelect" onchange="switchTab(this.value)" class="bg-slate-800 text-slate-200 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs outline-none">
-            <!-- Populated via JS -->
-        </select>
+
+        <!-- DESKTOP SIDEBAR -->
+        <aside class="hidden md:flex flex-col w-72 bg-slate-50/80 border-r border-slate-200/80 shrink-0">
+            <div class="p-6 flex items-center gap-3">
+                <div class="p-3 bg-gradient-to-tr from-violet-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="calculator" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold tracking-tight text-slate-900 text-lg leading-tight">ASG SmartCalc</h1>
+                    <p class="text-xs font-bold text-purple-600">All in one calculator</p>
+                </div>
+            </div>
+
+            <!-- Vertical Nav Links -->
+            <nav id="desktopSidebar" class="flex-1 overflow-y-auto px-4 py-2 space-y-1.5">
+                <!-- Dynamic Nav Buttons Injected Here -->
+            </nav>
+
+            <div class="p-5 border-t border-slate-200/80 text-xs text-slate-400 flex justify-between items-center font-medium">
+                <span class="font-mono bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full font-bold">v1.2 Pro</span>
+                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-500"></i>
+            </div>
+        </aside>
+
+        <!-- MAIN VIEW AREA -->
+        <main class="flex-1 overflow-y-auto p-5 md:p-10 bg-slate-50/40 flex flex-col justify-between">
+            <div class="max-w-5xl w-full mx-auto space-y-6">
+                
+                <!-- TAB HEADER -->
+                <div class="flex items-center justify-between border-b border-slate-200 pb-5">
+                    <div>
+                        <h2 id="currentTabTitle" class="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Calculator</h2>
+                        <p id="currentTabDesc" class="text-xs md:text-sm font-medium text-slate-500 mt-0.5">Select a tool from the suite to begin.</p>
+                    </div>
+                </div>
+
+                <!-- CALCULATOR PANELS -->
+                <div id="calculatorPanels">
+
+                    <!-- TAB 1: UNIT CONVERTER -->
+                    <div id="panel-unit" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Value</label>
+                                    <input type="number" id="unitVal" value="1" oninput="calcUnit()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 font-bold outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Type</label>
+                                    <select id="unitType" onchange="calcUnit()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 font-semibold outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition">
+                                        <option value="length">Length (Meters / Feet / Inches / Km / Miles)</option>
+                                        <option value="weight">Weight (Kg / Lbs / Grams / Ounces)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-violet-50 to-purple-50 p-6 rounded-2xl border border-purple-100 flex flex-col justify-center space-y-3">
+                                <div class="text-xs font-extrabold text-purple-600 tracking-wider uppercase">Conversions</div>
+                                <div id="unitResults" class="text-sm font-semibold space-y-2 text-slate-800">
+                                    <!-- Dynamic Output -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: VOLUME & CBM -->
+                    <div id="panel-cbm" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Length (cm)</label>
+                                        <input type="number" id="cbmL" value="50" oninput="calcCBM()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Width (cm)</label>
+                                        <input type="number" id="cbmW" value="40" oninput="calcCBM()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Height (cm)</label>
+                                        <input type="number" id="cbmH" value="30" oninput="calcCBM()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Quantity (Boxes)</label>
+                                    <input type="number" id="cbmQty" value="10" oninput="calcCBM()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-cyan-50 to-teal-50 p-6 md:p-8 rounded-3xl border border-cyan-100 flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs font-extrabold text-cyan-700 uppercase tracking-wider">Total Volume</div>
+                                    <div id="cbmResult" class="text-4xl font-black text-cyan-600 font-mono mt-1">0.000 m³</div>
+                                </div>
+                                <div id="cbmWeightResult" class="text-xs font-medium text-slate-600 space-y-1.5 border-t border-cyan-200/60 pt-4"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: CURRENCY -->
+                    <div id="panel-currency" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Amount</label>
+                                    <input type="number" id="currAmt" value="100" oninput="calcCurrency()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">From</label>
+                                        <select id="currFrom" onchange="calcCurrency()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                            <option value="USD">USD - US Dollar</option>
+                                            <option value="EUR">EUR - Euro</option>
+                                            <option value="GBP">GBP - British Pound</option>
+                                            <option value="INR" selected>INR - Indian Rupee</option>
+                                            <option value="AED">AED - UAE Dirham</option>
+                                            <option value="SGD">SGD - Singapore Dollar</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">To</label>
+                                        <select id="currTo" onchange="calcCurrency()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                            <option value="USD" selected>USD - US Dollar</option>
+                                            <option value="EUR">EUR - Euro</option>
+                                            <option value="GBP">GBP - British Pound</option>
+                                            <option value="INR">INR - Indian Rupee</option>
+                                            <option value="AED">AED - UAE Dirham</option>
+                                            <option value="SGD">SGD - Singapore Dollar</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-2xl border border-emerald-100 flex flex-col justify-center items-center text-center">
+                                <div class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider mb-1">Live Converted Value</div>
+                                <div id="currOutput" class="text-3xl font-black text-emerald-600 font-mono">--</div>
+                                <div id="currStatus" class="text-xs font-medium text-slate-500 mt-2">Fetching exchange rates...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: INVESTMENT & RETURN -->
+                    <div id="panel-invest" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Initial Capital</label>
+                                    <input type="number" id="invBase" value="10000" oninput="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Commissions</label>
+                                        <input type="number" id="invComm" value="200" oninput="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Expenses/Fees</label>
+                                        <input type="number" id="invExp" value="300" oninput="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Expected Return (%)</label>
+                                        <input type="number" id="invRate" value="12" oninput="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Calculate On</label>
+                                        <select id="invBasis" onchange="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                            <option value="total">Total Outlay</option>
+                                            <option value="base">Initial Capital Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-violet-50 to-indigo-50 p-6 md:p-8 rounded-3xl border border-indigo-100 space-y-4 flex flex-col justify-center">
+                                <div class="flex justify-between border-b border-indigo-200/60 pb-3">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Total Outlay:</span>
+                                    <span id="invTotalOutlay" class="font-mono font-bold text-slate-900">$0</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm">
+                                        <div class="text-xs font-bold text-slate-400 uppercase">Monthly Profit</div>
+                                        <div id="invMonthly" class="text-xl font-extrabold text-emerald-600 font-mono mt-1">$0</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm">
+                                        <div class="text-xs font-bold text-slate-400 uppercase">Yearly Profit</div>
+                                        <div id="invYearly" class="text-xl font-extrabold text-emerald-600 font-mono mt-1">$0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: LOAN EMI -->
+                    <div id="panel-emi" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-12 gap-6">
+                            <div class="md:col-span-5 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Loan Amount</label>
+                                    <input type="number" id="emiAmount" value="50000" oninput="calcEMI()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Interest Rate (% p.a.)</label>
+                                    <input type="number" id="emiRate" value="8.5" step="0.1" oninput="calcEMI()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Tenure (Years)</label>
+                                    <input type="number" id="emiTenure" value="5" oninput="calcEMI()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div class="pt-3 border-t border-slate-200">
+                                    <div class="text-xs font-bold text-slate-400 uppercase">Monthly EMI</div>
+                                    <div id="emiOutput" class="text-3xl font-black text-purple-600 font-mono">$0</div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-7 bg-slate-50/80 p-6 rounded-3xl border border-slate-200/80 flex flex-col md:flex-row items-center gap-6">
+                                <div class="w-48 h-48 relative shrink-0">
+                                    <canvas id="emiChart"></canvas>
+                                </div>
+                                <div class="flex-1 space-y-3 w-full">
+                                    <div class="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500 uppercase">Principal Amount</span>
+                                        <span id="emiPrincipalText" class="font-mono font-bold text-slate-900">$0</span>
+                                    </div>
+                                    <div class="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500 uppercase">Total Interest</span>
+                                        <span id="emiInterestText" class="font-mono font-bold text-pink-500">$0</span>
+                                    </div>
+                                    <div class="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500 uppercase">Total Payable</span>
+                                        <span id="emiTotalText" class="font-mono font-bold text-purple-600">$0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 6: MARGIN & MARKUP -->
+                    <div id="panel-margin" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Cost Price ($)</label>
+                                    <input type="number" id="marginCost" value="80" oninput="calcMargin()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Selling Price ($)</label>
+                                    <input type="number" id="marginSell" value="120" oninput="calcMargin()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-pink-50 to-rose-50 p-6 rounded-2xl border border-pink-100 flex flex-col justify-center space-y-4">
+                                <div class="flex justify-between border-b border-pink-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Gross Profit:</span>
+                                    <span id="marginProfit" class="font-mono font-bold text-emerald-600">$0</span>
+                                </div>
+                                <div class="flex justify-between border-b border-pink-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Gross Margin:</span>
+                                    <span id="marginMargin" class="font-mono font-bold text-purple-600">0%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Markup:</span>
+                                    <span id="marginMarkup" class="font-mono font-bold text-pink-600">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 7: GST / TAX -->
+                    <div id="panel-gst" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Amount ($)</label>
+                                    <input type="number" id="gstAmt" value="1000" oninput="calcGST()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Tax Rate (%)</label>
+                                    <input type="number" id="gstRate" value="18" oninput="calcGST()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Calculation Type</label>
+                                    <select id="gstType" onchange="calcGST()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="exclusive">Exclusive (Add GST)</option>
+                                        <option value="inclusive">Inclusive (Extract GST)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-100 flex flex-col justify-center space-y-4">
+                                <div class="flex justify-between border-b border-amber-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Net Amount:</span>
+                                    <span id="gstNet" class="font-mono font-bold text-slate-900">$0</span>
+                                </div>
+                                <div class="flex justify-between border-b border-amber-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Tax Amount:</span>
+                                    <span id="gstTax" class="font-mono font-bold text-amber-600">$0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Total Gross Amount:</span>
+                                    <span id="gstTotal" class="font-mono font-bold text-purple-600">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 8: FREIGHT WEIGHT -->
+                    <div id="panel-freight" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">L (cm)</label>
+                                        <input type="number" id="frL" value="60" oninput="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">W (cm)</label>
+                                        <input type="number" id="frW" value="50" oninput="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">H (cm)</label>
+                                        <input type="number" id="frH" value="40" oninput="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Actual Weight (kg)</label>
+                                    <input type="number" id="frAct" value="15" oninput="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Courier Divisor</label>
+                                    <select id="frDivisor" onchange="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="5000">5000 (Standard Express / DHL / FedEx)</option>
+                                        <option value="6000">6000 (Air Cargo Standard)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-cyan-50 to-blue-50 p-6 rounded-2xl border border-cyan-100 flex flex-col justify-center space-y-4">
+                                <div>
+                                    <div class="text-xs font-bold text-slate-400 uppercase">Volumetric Weight</div>
+                                    <div id="frVolWeight" class="text-2xl font-black font-mono text-slate-900 mt-1">0 kg</div>
+                                </div>
+                                <div class="border-t border-cyan-200/60 pt-3">
+                                    <div class="text-xs font-extrabold text-cyan-700 uppercase tracking-wider">Billable Weight</div>
+                                    <div id="frBillable" class="text-3xl font-black font-mono text-purple-600 mt-1">0 kg</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 9: COMPOUND SIP -->
+                    <div id="panel-sip" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Monthly Investment ($)</label>
+                                    <input type="number" id="sipMonthly" value="500" oninput="calcSIP()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Expected Annual Return (%)</label>
+                                    <input type="number" id="sipRate" value="12" oninput="calcSIP()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Time Period (Years)</label>
+                                    <input type="number" id="sipYears" value="10" oninput="calcSIP()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-violet-50 to-fuchsia-50 p-6 rounded-2xl border border-purple-100 flex flex-col justify-center space-y-3">
+                                <div>
+                                    <div class="text-xs font-bold text-slate-400 uppercase">Total Invested</div>
+                                    <div id="sipInvested" class="text-xl font-bold font-mono text-slate-700 mt-0.5">$0</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-slate-400 uppercase">Estimated Returns</div>
+                                    <div id="sipReturns" class="text-xl font-bold font-mono text-emerald-600 mt-0.5">$0</div>
+                                </div>
+                                <div class="border-t border-purple-200/60 pt-3">
+                                    <div class="text-xs font-extrabold text-purple-700 uppercase tracking-wider">Future Wealth Value</div>
+                                    <div id="sipTotal" class="text-3xl font-black font-mono text-purple-600 mt-1">$0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 10: DATE DIFFERENCE -->
+                    <div id="panel-date" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Start Date</label>
+                                    <input type="date" id="dateStart" onchange="calcDate()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">End Date</label>
+                                    <input type="date" id="dateEnd" onchange="calcDate()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-sky-50 to-indigo-50 p-6 rounded-2xl border border-sky-100 flex flex-col justify-center space-y-4">
+                                <div>
+                                    <div class="text-xs font-bold text-slate-400 uppercase">Total Duration</div>
+                                    <div id="dateTotalDays" class="text-2xl font-black font-mono text-purple-600 mt-1">0 Days</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-slate-400 uppercase">Estimated Business Days (Mon-Fri)</div>
+                                    <div id="dateBizDays" class="text-xl font-bold font-mono text-slate-900 mt-1">0 Days</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 11: QR CODE GENERATOR -->
+                    <div id="panel-qrcode" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Target URL or Text</label>
+                                    <input type="text" id="qrInput" value="https://github.com" oninput="generateQR()" placeholder="Enter URL (e.g. https://yourdomain.com)" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 font-bold outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">QR Code Size</label>
+                                    <select id="qrSize" onchange="generateQR()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 font-semibold outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="160">Small (160x160 px)</option>
+                                        <option value="220" selected>Medium (220x220 px)</option>
+                                        <option value="300">Large (300x300 px)</option>
+                                    </select>
+                                </div>
+                                <button onclick="downloadQR()" class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 text-sm shadow-xl shadow-indigo-500/20 active:scale-95">
+                                    <i data-lucide="download" class="w-4 h-4"></i>
+                                    Download QR Code
+                                </button>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-2xl border border-purple-100 flex flex-col items-center justify-center min-h-[260px]">
+                                <div id="qrcode" class="p-4 bg-white rounded-2xl shadow-xl border border-slate-100 flex items-center justify-center overflow-hidden">
+                                    <!-- Dynamic Canvas Rendered Here -->
+                                </div>
+                                <span class="text-xs font-semibold text-slate-400 mt-4">Scan using any smartphone camera</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- APP FOOTER -->
+            <footer class="mt-8 border-t border-slate-200/80 pt-4 text-center text-xs text-slate-400 font-semibold">
+                &copy; <span id="copyrightYear"></span> Built by /\/ Designz
+            </footer>
+        </main>
     </div>
 
-    <!-- DESKTOP SIDEBAR -->
-    <aside class="hidden md:flex flex-col w-72 bg-slate-900 border-r border-slate-800 shrink-0">
-        <div class="p-5 border-b border-slate-800 flex items-center gap-3">
-            <div class="p-2.5 bg-brand-600/20 text-brand-500 rounded-xl border border-brand-500/20">
-                <i data-lucide="calculator" class="w-6 h-6"></i>
-            </div>
-            <div>
-                <h1 class="font-bold tracking-tight text-slate-100 text-lg leading-tight">ASG SmartCalc Pro</h1>
-                <p class="text-xs font-medium text-brand-400">All in one calculator</p>
-            </div>
-        </div>
-
-        <!-- Vertical Nav Links -->
-        <nav id="desktopSidebar" class="flex-1 overflow-y-auto p-3 space-y-1">
-            <!-- Dynamic Nav Buttons Injected Here -->
-        </nav>
-
-        <div class="p-4 border-t border-slate-800/80 text-xs text-slate-500 flex justify-between items-center">
-            <span class="font-mono">v1.0 • Pro Suite</span>
-            <i data-lucide="shield-check" class="w-4 h-4 text-brand-500"></i>
-        </div>
-    </aside>
-
-    <!-- MAIN VIEW AREA -->
-    <main class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-950 flex flex-col justify-between">
-        <div class="max-w-5xl w-full mx-auto space-y-6">
-            
-            <!-- TAB HEADER -->
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <div>
-                    <h2 id="currentTabTitle" class="text-2xl font-bold tracking-tight text-white">Calculator</h2>
-                    <p id="currentTabDesc" class="text-sm text-slate-400">Select a tool from the suite to begin.</p>
-                </div>
-            </div>
-
-            <!-- CALCULATOR PANELS -->
-            <div id="calculatorPanels">
-
-                <!-- TAB 1: UNIT CONVERTER -->
-                <div id="panel-unit" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-2 gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800/80">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">VALUE</label>
-                                <input type="number" id="unitVal" value="1" oninput="calcUnit()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">TYPE</label>
-                                <select id="unitType" onchange="calcUnit()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white outline-none focus:border-brand-500">
-                                    <option value="length">Length (Meters / Feet / Inches / Km / Miles)</option>
-                                    <option value="weight">Weight (Kg / Lbs / Grams / Ounces)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col justify-center space-y-2">
-                            <div class="text-xs text-slate-400">CONVERSIONS</div>
-                            <div id="unitResults" class="text-sm space-y-1 font-mono text-brand-100">
-                                <!-- Dynamic Output -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 2: VOLUME & CBM -->
-                <div id="panel-cbm" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 space-y-4">
-                            <div class="grid grid-cols-3 gap-3">
-                                <div>
-                                    <label class="text-xs text-slate-400">Length (cm)</label>
-                                    <input type="number" id="cbmL" value="50" oninput="calcCBM()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                </div>
-                                <div>
-                                    <label class="text-xs text-slate-400">Width (cm)</label>
-                                    <input type="number" id="cbmW" value="40" oninput="calcCBM()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                </div>
-                                <div>
-                                    <label class="text-xs text-slate-400">Height (cm)</label>
-                                    <input type="number" id="cbmH" value="30" oninput="calcCBM()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Quantity (Boxes)</label>
-                                <input type="number" id="cbmQty" value="10" oninput="calcCBM()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-3">
-                            <div class="text-slate-400 text-sm">Total Volume</div>
-                            <div id="cbmResult" class="text-3xl font-bold text-brand-500 font-mono">0.000 m³</div>
-                            <div id="cbmWeightResult" class="text-xs text-slate-400 space-y-1 border-t border-slate-800 pt-3"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 3: CURRENCY (REALTIME API) -->
-                <div id="panel-currency" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-2 gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-xs text-slate-400">Amount</label>
-                                <input type="number" id="currAmt" value="100" oninput="calcCurrency()" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="text-xs text-slate-400">From</label>
-                                    <select id="currFrom" onchange="calcCurrency()" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1">
-                                        <option value="USD">USD - US Dollar</option>
-                                        <option value="EUR">EUR - Euro</option>
-                                        <option value="GBP">GBP - British Pound</option>
-                                        <option value="INR" selected>INR - Indian Rupee</option>
-                                        <option value="AED">AED - UAE Dirham</option>
-                                        <option value="SGD">SGD - Singapore Dollar</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="text-xs text-slate-400">To</label>
-                                    <select id="currTo" onchange="calcCurrency()" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-white mt-1">
-                                        <option value="USD" selected>USD - US Dollar</option>
-                                        <option value="EUR">EUR - Euro</option>
-                                        <option value="GBP">GBP - British Pound</option>
-                                        <option value="INR">INR - Indian Rupee</option>
-                                        <option value="AED">AED - UAE Dirham</option>
-                                        <option value="SGD">SGD - Singapore Dollar</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 flex flex-col justify-center items-center text-center">
-                            <div class="text-xs text-slate-500 mb-1">LIVE CONVERTED VALUE</div>
-                            <div id="currOutput" class="text-3xl font-extrabold text-green-400 font-mono">--</div>
-                            <div id="currStatus" class="text-xs text-slate-500 mt-2">Fetching exchange rates...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 4: INVESTMENT & RETURN -->
-                <div id="panel-invest" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 space-y-3">
-                            <div>
-                                <label class="text-xs text-slate-400">Initial Capital</label>
-                                <input type="number" id="invBase" value="10000" oninput="calcInvest()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="text-xs text-slate-400">Commissions</label>
-                                    <input type="number" id="invComm" value="200" oninput="calcInvest()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                </div>
-                                <div>
-                                    <label class="text-xs text-slate-400">Expenses/Fees</label>
-                                    <input type="number" id="invExp" value="300" oninput="calcInvest()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="text-xs text-slate-400">Expected Return (%)</label>
-                                    <input type="number" id="invRate" value="12" oninput="calcInvest()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                </div>
-                                <div>
-                                    <label class="text-xs text-slate-400">Calculate On</label>
-                                    <select id="invBasis" onchange="calcInvest()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                        <option value="total">Total Outlay</option>
-                                        <option value="base">Initial Capital Only</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
-                            <div class="flex justify-between border-b border-slate-800 pb-2">
-                                <span class="text-xs text-slate-400">Total Outlay:</span>
-                                <span id="invTotalOutlay" class="font-mono font-bold text-white">$0</span>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                                    <div class="text-xs text-slate-500">Monthly Profit</div>
-                                    <div id="invMonthly" class="text-lg font-bold text-green-400 font-mono">$0</div>
-                                </div>
-                                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                                    <div class="text-xs text-slate-500">Yearly Profit</div>
-                                    <div id="invYearly" class="text-lg font-bold text-green-400 font-mono">$0</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 5: LOAN EMI & INFOGRAPHIC CHART -->
-                <div id="panel-emi" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-12 gap-6">
-                        <div class="md:col-span-5 bg-slate-900/50 p-6 rounded-2xl border border-slate-800 space-y-4">
-                            <div>
-                                <label class="text-xs text-slate-400">Loan Amount</label>
-                                <input type="number" id="emiAmount" value="50000" oninput="calcEMI()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Interest Rate (% p.a.)</label>
-                                <input type="number" id="emiRate" value="8.5" step="0.1" oninput="calcEMI()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Tenure (Years)</label>
-                                <input type="number" id="emiTenure" value="5" oninput="calcEMI()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                            <div class="pt-2 border-t border-slate-800">
-                                <div class="text-xs text-slate-500">Monthly EMI</div>
-                                <div id="emiOutput" class="text-3xl font-extrabold text-brand-500 font-mono">$0</div>
-                            </div>
-                        </div>
-                        <div class="md:col-span-7 bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col md:flex-row items-center gap-6">
-                            <div class="w-48 h-48 relative">
-                                <canvas id="emiChart"></canvas>
-                            </div>
-                            <div class="flex-1 space-y-3 w-full">
-                                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between">
-                                    <span class="text-xs text-slate-400">Principal Amount</span>
-                                    <span id="emiPrincipalText" class="font-mono font-bold">$0</span>
-                                </div>
-                                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between">
-                                    <span class="text-xs text-slate-400">Total Interest</span>
-                                    <span id="emiInterestText" class="font-mono font-bold text-amber-400">$0</span>
-                                </div>
-                                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between">
-                                    <span class="text-xs text-slate-400">Total Payable</span>
-                                    <span id="emiTotalText" class="font-mono font-bold text-brand-400">$0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 6: MARGIN & MARKUP -->
-                <div id="panel-margin" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-2 gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-xs text-slate-400">Cost Price ($)</label>
-                                <input type="number" id="marginCost" value="80" oninput="calcMargin()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white mt-1">
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Selling Price ($)</label>
-                                <input type="number" id="marginSell" value="120" oninput="calcMargin()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white mt-1">
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col justify-center space-y-4">
-                            <div class="flex justify-between border-b border-slate-800 pb-2">
-                                <span class="text-xs text-slate-400">Gross Profit:</span>
-                                <span id="marginProfit" class="font-mono font-bold text-green-400">$0</span>
-                            </div>
-                            <div class="flex justify-between border-b border-slate-800 pb-2">
-                                <span class="text-xs text-slate-400">Gross Margin:</span>
-                                <span id="marginMargin" class="font-mono font-bold text-brand-400">0%</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-xs text-slate-400">Markup:</span>
-                                <span id="marginMarkup" class="font-mono font-bold text-purple-400">0%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 7: GST / TAX CALCULATOR -->
-                <div id="panel-gst" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-2 gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-xs text-slate-400">Amount ($)</label>
-                                <input type="number" id="gstAmt" value="1000" oninput="calcGST()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white mt-1">
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Tax Rate (%)</label>
-                                <input type="number" id="gstRate" value="18" oninput="calcGST()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white mt-1">
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Calculation Type</label>
-                                <select id="gstType" onchange="calcGST()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white mt-1">
-                                    <option value="exclusive">Exclusive (Add GST)</option>
-                                    <option value="inclusive">Inclusive (Extract GST)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col justify-center space-y-4">
-                            <div class="flex justify-between border-b border-slate-800 pb-2">
-                                <span class="text-xs text-slate-400">Net Amount:</span>
-                                <span id="gstNet" class="font-mono font-bold text-white">$0</span>
-                            </div>
-                            <div class="flex justify-between border-b border-slate-800 pb-2">
-                                <span class="text-xs text-slate-400">Tax Amount:</span>
-                                <span id="gstTax" class="font-mono font-bold text-amber-400">$0</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-xs text-slate-400">Total Gross Amount:</span>
-                                <span id="gstTotal" class="font-mono font-bold text-brand-400">$0</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 8: FREIGHT & BILLABLE WEIGHT -->
-                <div id="panel-freight" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-2 gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                        <div class="space-y-3">
-                            <div class="grid grid-cols-3 gap-2">
-                                <div>
-                                    <label class="text-xs text-slate-400">L (cm)</label>
-                                    <input type="number" id="frL" value="60" oninput="calcFreight()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                </div>
-                                <div>
-                                    <label class="text-xs text-slate-400">W (cm)</label>
-                                    <input type="number" id="frW" value="50" oninput="calcFreight()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                </div>
-                                <div>
-                                    <label class="text-xs text-slate-400">H (cm)</label>
-                                    <input type="number" id="frH" value="40" oninput="calcFreight()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Actual Weight (kg)</label>
-                                <input type="number" id="frAct" value="15" oninput="calcFreight()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Courier Divisor</label>
-                                <select id="frDivisor" onchange="calcFreight()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                                    <option value="5000">5000 (Standard Express / DHL / FedEx)</option>
-                                    <option value="6000">6000 (Air Cargo Standard)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col justify-center space-y-4">
-                            <div>
-                                <div class="text-xs text-slate-500">Volumetric Weight</div>
-                                <div id="frVolWeight" class="text-xl font-bold font-mono text-white">0 kg</div>
-                            </div>
-                            <div class="border-t border-slate-800 pt-3">
-                                <div class="text-xs text-slate-500">BILLABLE WEIGHT</div>
-                                <div id="frBillable" class="text-3xl font-extrabold font-mono text-brand-400">0 kg</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 9: COMPOUND SIP WEALTH -->
-                <div id="panel-sip" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-2 gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                        <div class="space-y-3">
-                            <div>
-                                <label class="text-xs text-slate-400">Monthly Investment ($)</label>
-                                <input type="number" id="sipMonthly" value="500" oninput="calcSIP()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Expected Annual Return (%)</label>
-                                <input type="number" id="sipRate" value="12" oninput="calcSIP()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">Time Period (Years)</label>
-                                <input type="number" id="sipYears" value="10" oninput="calcSIP()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col justify-center space-y-3">
-                            <div>
-                                <div class="text-xs text-slate-500">Total Invested</div>
-                                <div id="sipInvested" class="text-lg font-bold font-mono text-slate-300">$0</div>
-                            </div>
-                            <div>
-                                <div class="text-xs text-slate-500">Estimated Returns</div>
-                                <div id="sipReturns" class="text-lg font-bold font-mono text-green-400">$0</div>
-                            </div>
-                            <div class="border-t border-slate-800 pt-2">
-                                <div class="text-xs text-slate-500">Future Wealth Value</div>
-                                <div id="sipTotal" class="text-3xl font-extrabold font-mono text-brand-400">$0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 10: DATE & BUSINESS DAYS -->
-                <div id="panel-date" class="calc-panel hidden">
-                    <div class="grid md:grid-cols-2 gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                        <div class="space-y-3">
-                            <div>
-                                <label class="text-xs text-slate-400">Start Date</label>
-                                <input type="date" id="dateStart" onchange="calcDate()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                            <div>
-                                <label class="text-xs text-slate-400">End Date</label>
-                                <input type="date" id="dateEnd" onchange="calcDate()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white mt-1">
-                            </div>
-                        </div>
-                        <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col justify-center space-y-3">
-                            <div>
-                                <div class="text-xs text-slate-500">Total Days</div>
-                                <div id="dateTotalDays" class="text-2xl font-bold font-mono text-brand-400">0 Days</div>
-                            </div>
-                            <div>
-                                <div class="text-xs text-slate-500">Estimated Business Days (Mon-Fri)</div>
-                                <div id="dateBizDays" class="text-xl font-bold font-mono text-white">0 Days</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- APP FOOTER -->
-        <footer class="mt-8 border-t border-slate-800/80 pt-4 text-center text-xs text-slate-500 font-mono">
-            &copy; <span id="copyrightYear"></span> Built by /\/ Designz
-        </footer>
-    </main>
-
     <script>
-        // --- ROUTER CONFIGURATION: EASILY ADD NEW CALCULATORS HERE ---
+        // --- ROUTER CONFIGURATION ---
         const TABS = [
             { id: 'unit',     name: 'Unit Converter',   icon: 'ruler',        desc: 'Length & Weight metric conversions' },
             { id: 'cbm',      name: 'Volume & CBM',     icon: 'box',          desc: 'Calculate Cubic Meters and Volumetric weight' },
@@ -468,9 +508,11 @@
             { id: 'freight',  name: 'Freight Weight',   icon: 'truck',        desc: 'Volumetric vs Actual shipping weight' },
             { id: 'sip',      name: 'Wealth / SIP',     icon: 'landmark',     desc: 'Compound wealth growth simulator' },
             { id: 'date',     name: 'Date Difference',  icon: 'calendar',     desc: 'Calculate duration and business days' },
+            { id: 'qrcode',   name: 'QR Code Generator',icon: 'qr-code',      desc: 'Generate downloadable QR codes for URLs' },
         ];
 
         let emiChartInstance = null;
+        let qrInstance = null;
 
         // Initialize Router on Load
         document.addEventListener("DOMContentLoaded", () => {
@@ -497,6 +539,7 @@
             calcFreight();
             calcSIP();
             calcDate();
+            generateQR();
         });
 
         // Dynamic Nav Builder
@@ -506,7 +549,7 @@
 
             sidebar.innerHTML = TABS.map(tab => `
                 <button onclick="switchTab('${tab.id}')" id="nav-${tab.id}" 
-                    class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all text-slate-500 hover:text-slate-900 hover:bg-slate-200/50">
                     <i data-lucide="${tab.icon}" class="w-4 h-4"></i>
                     <span>${tab.name}</span>
                 </button>
@@ -524,15 +567,15 @@
                 const panel = document.getElementById(`panel-${tab.id}`);
                 
                 if (tab.id === tabId) {
-                    btn?.classList.add('bg-brand-600', 'text-white', 'shadow-lg');
-                    btn?.classList.remove('text-slate-400', 'hover:bg-slate-800/60');
+                    btn?.classList.add('bg-gradient-to-r', 'from-violet-600', 'to-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-500/20');
+                    btn?.classList.remove('text-slate-500', 'hover:bg-slate-200/50');
                     panel?.classList.remove('hidden');
                     
                     document.getElementById('currentTabTitle').innerText = tab.name;
                     document.getElementById('currentTabDesc').innerText = tab.desc;
                 } else {
-                    btn?.classList.remove('bg-brand-600', 'text-white', 'shadow-lg');
-                    btn?.classList.add('text-slate-400');
+                    btn?.classList.remove('bg-gradient-to-r', 'from-violet-600', 'to-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-500/20');
+                    btn?.classList.add('text-slate-500');
                     panel?.classList.add('hidden');
                 }
             });
@@ -624,7 +667,7 @@
             document.getElementById('invYearly').innerText = `$${yearlyProfit.toLocaleString(undefined, {maximumFractionDigits: 0})}`;
         }
 
-        // 5. Loan EMI & Chart.js Infographic
+        // 5. Loan EMI & Chart
         function calcEMI() {
             const p = parseFloat(document.getElementById('emiAmount').value) || 0;
             const r = (parseFloat(document.getElementById('emiRate').value) || 0) / 12 / 100;
@@ -641,7 +684,6 @@
             document.getElementById('emiInterestText').innerText = `$${Math.round(totalInterest).toLocaleString()}`;
             document.getElementById('emiTotalText').innerText = `$${Math.round(totalPayable).toLocaleString()}`;
 
-            // Render Doughnut Infographic
             const ctx = document.getElementById('emiChart').getContext('2d');
             if (emiChartInstance) emiChartInstance.destroy();
 
@@ -651,7 +693,7 @@
                     labels: ['Principal', 'Interest'],
                     datasets: [{
                         data: [p, totalInterest],
-                        backgroundColor: ['#2563eb', '#f59e0b'],
+                        backgroundColor: ['#7c3aed', '#ec4899'],
                         borderWidth: 0
                     }]
                 },
@@ -742,7 +784,6 @@
             const diffTime = Math.abs(end - start);
             const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            // Calculate Business Days
             let count = 0;
             let cur = new Date(start < end ? start : end);
             const max = start < end ? end : start;
@@ -754,6 +795,45 @@
 
             document.getElementById('dateTotalDays').innerText = `${totalDays} Days`;
             document.getElementById('dateBizDays').innerText = `${count} Business Days`;
+        }
+
+        // 11. QR Code Engine
+        function generateQR() {
+            const text = document.getElementById('qrInput').value.trim() || 'https://github.com';
+            const size = parseInt(document.getElementById('qrSize').value) || 220;
+            const container = document.getElementById('qrcode');
+
+            container.innerHTML = '';
+            
+            qrInstance = new QRCode(container, {
+                text: text,
+                width: size,
+                height: size,
+                colorDark: "#1e1b4b",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        function downloadQR() {
+            const img = document.querySelector('#qrcode img');
+            const canvas = document.querySelector('#qrcode canvas');
+
+            let src = '';
+            if (img && img.src) {
+                src = img.src;
+            } else if (canvas) {
+                src = canvas.toDataURL("image/png");
+            }
+
+            if (!src) return;
+
+            const link = document.createElement('a');
+            link.href = src;
+            link.download = 'qrcode.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
