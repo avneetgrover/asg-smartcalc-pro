@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASG SmartCalc Pro - All in one calculator</title>
+    
+    <!-- CALCULATOR FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='16' height='20' x='4' y='2' rx='2'/><line x1='8' x2='16' y1='6' y2='6'/><line x1='16' x2='16' y1='14' y2='18'/><path d='M16 10h.01'/><path d='M12 10h.01'/><path d='M8 10h.01'/><path d='M12 14h.01'/><path d='M8 14h.01'/><path d='M12 18h.01'/><path d='M8 18h.01'/></svg>">
+
     <!-- Tailwind CSS for UI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for Visual Infographics -->
@@ -150,36 +154,32 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: CURRENCY -->
+                    <!-- TAB 3: CURRENCY (UPDATED) -->
                     <div id="panel-currency" class="calc-panel hidden">
                         <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
                             <div class="space-y-4">
                                 <div>
                                     <label class="text-xs font-bold text-slate-500 uppercase">Amount</label>
-                                    <input type="number" id="currAmt" value="100" oninput="calcCurrency()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    <input type="number" id="currAmt" value="1" oninput="calcCurrency()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
                                 </div>
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label class="text-xs font-bold text-slate-500 uppercase">From</label>
-                                        <select id="currFrom" onchange="calcCurrency()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
-                                            <option value="USD">USD - US Dollar</option>
-                                            <option value="EUR">EUR - Euro</option>
-                                            <option value="GBP">GBP - British Pound</option>
-                                            <option value="INR" selected>INR - Indian Rupee</option>
-                                            <option value="AED">AED - UAE Dirham</option>
-                                            <option value="SGD">SGD - Singapore Dollar</option>
-                                        </select>
+                                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">From</label>
+                                        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
+                                            <img id="currFromFlag" src="https://flagcdn.com/w40/us.png" class="w-6 h-4 rounded object-cover border border-slate-200" alt="Flag">
+                                            <select id="currFrom" onchange="updateFlags(); calcCurrency();" class="w-full bg-transparent text-slate-900 font-semibold outline-none py-1 text-sm">
+                                                <!-- Dynamic Global Currencies -->
+                                            </select>
+                                        </div>
                                     </div>
                                     <div>
-                                        <label class="text-xs font-bold text-slate-500 uppercase">To</label>
-                                        <select id="currTo" onchange="calcCurrency()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
-                                            <option value="USD" selected>USD - US Dollar</option>
-                                            <option value="EUR">EUR - Euro</option>
-                                            <option value="GBP">GBP - British Pound</option>
-                                            <option value="INR">INR - Indian Rupee</option>
-                                            <option value="AED">AED - UAE Dirham</option>
-                                            <option value="SGD">SGD - Singapore Dollar</option>
-                                        </select>
+                                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">To</label>
+                                        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
+                                            <img id="currToFlag" src="https://flagcdn.com/w40/in.png" class="w-6 h-4 rounded object-cover border border-slate-200" alt="Flag">
+                                            <select id="currTo" onchange="updateFlags(); calcCurrency();" class="w-full bg-transparent text-slate-900 font-semibold outline-none py-1 text-sm">
+                                                <!-- Dynamic Global Currencies -->
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -490,12 +490,66 @@
 
             <!-- APP FOOTER -->
             <footer class="mt-8 border-t border-slate-200/80 pt-4 text-center text-xs text-slate-400 font-semibold">
-                &copy; <span id="copyrightYear"></span> Built by /\\/Designz
+                &copy; <span id="copyrightYear"></span> Built by /\/ Designz
             </footer>
         </main>
     </div>
 
     <script>
+        // GLOBAL CURRENCIES & ISO 2-LETTER COUNTRY CODES
+        const WORLD_CURRENCIES = [
+            { code: "USD", name: "USD - US Dollar", country: "us" },
+            { code: "INR", name: "INR - Indian Rupee", country: "in" },
+            { code: "EUR", name: "EUR - Euro", country: "eu" },
+            { code: "GBP", name: "GBP - British Pound", country: "gb" },
+            { code: "AED", name: "AED - UAE Dirham", country: "ae" },
+            { code: "SGD", name: "SGD - Singapore Dollar", country: "sg" },
+            { code: "CAD", name: "CAD - Canadian Dollar", country: "ca" },
+            { code: "AUD", name: "AUD - Australian Dollar", country: "au" },
+            { code: "JPY", name: "JPY - Japanese Yen", country: "jp" },
+            { code: "CNY", name: "CNY - Chinese Yuan", country: "cn" },
+            { code: "CHF", name: "CHF - Swiss Franc", country: "ch" },
+            { code: "NZD", name: "NZD - NZ Dollar", country: "nz" },
+            { code: "HKD", name: "HKD - Hong Kong Dollar", country: "hk" },
+            { code: "SEK", name: "SEK - Swedish Krona", country: "se" },
+            { code: "KRW", name: "KRW - South Korean Won", country: "kr" },
+            { code: "NOK", name: "NOK - Norwegian Krone", country: "no" },
+            { code: "MXN", name: "MXN - Mexican Peso", country: "mx" },
+            { code: "BRL", name: "BRL - Brazilian Real", country: "br" },
+            { code: "RUB", name: "RUB - Russian Ruble", country: "ru" },
+            { code: "ZAR", name: "ZAR - S. African Rand", country: "za" },
+            { code: "TRY", name: "TRY - Turkish Lira", country: "tr" },
+            { code: "SAR", name: "SAR - Saudi Riyal", country: "sa" },
+            { code: "THB", name: "THB - Thai Baht", country: "th" },
+            { code: "IDR", name: "IDR - Indonesian Rupiah", country: "id" },
+            { code: "MYR", name: "MYR - Malaysian Ringgit", country: "my" },
+            { code: "PHP", name: "PHP - Philippine Peso", country: "ph" },
+            { code: "DKK", name: "DKK - Danish Krone", country: "dk" },
+            { code: "PLN", name: "PLN - Polish Zloty", country: "pl" },
+            { code: "ILS", name: "ILS - Israeli Shekel", country: "il" },
+            { code: "EGP", name: "EGP - Egyptian Pound", country: "eg" },
+            { code: "PKR", name: "PKR - Pakistani Rupee", country: "pk" },
+            { code: "BDT", name: "BDT - Bangladeshi Taka", country: "bd" },
+            { code: "VND", name: "VND - Vietnamese Dong", country: "vn" },
+            { code: "NGN", name: "NGN - Nigerian Naira", country: "ng" },
+            { code: "ARS", name: "ARS - Argentine Peso", country: "ar" },
+            { code: "CLP", name: "CLP - Chilean Peso", country: "cl" },
+            { code: "COP", name: "COP - Colombian Peso", country: "co" },
+            { code: "PEN", name: "PEN - Peruvian Sol", country: "pe" },
+            { code: "CZK", name: "CZK - Czech Koruna", country: "cz" },
+            { code: "HUF", name: "HUF - Hungarian Forint", country: "hu" },
+            { code: "RON", name: "RON - Romanian Leu", country: "ro" },
+            { code: "KWD", name: "KWD - Kuwaiti Dinar", country: "kw" },
+            { code: "BHD", name: "BHD - Bahraini Dinar", country: "bh" },
+            { code: "OMR", name: "OMR - Omani Rial", country: "om" },
+            { code: "QAR", name: "QAR - Qatari Riyal", country: "qa" },
+            { code: "JOD", name: "JOD - Jordanian Dinar", country: "jo" },
+            { code: "LKR", name: "LKR - Sri Lankan Rupee", country: "lk" },
+            { code: "NPR", name: "NPR - Nepalese Rupee", country: "np" },
+            { code: "KES", name: "KES - Kenyan Shilling", country: "ke" },
+            { code: "GHS", name: "GHS - Ghanaian Cedi", country: "gh" }
+        ];
+
         // --- ROUTER CONFIGURATION ---
         const TABS = [
             { id: 'unit',     name: 'Unit Converter',   icon: 'ruler',        desc: 'Length & Weight metric conversions' },
@@ -517,6 +571,7 @@
         // Initialize Router on Load
         document.addEventListener("DOMContentLoaded", () => {
             renderSidebar();
+            populateCurrencyDropdowns();
             switchTab('unit');
             lucide.createIcons();
             
@@ -584,6 +639,33 @@
 
         // --- CALCULATOR ENGINES ---
 
+        // Populate Currencies Dynamically
+        function populateCurrencyDropdowns() {
+            const fromSelect = document.getElementById('currFrom');
+            const toSelect = document.getElementById('currTo');
+
+            const options = WORLD_CURRENCIES.map(c => `<option value="${c.code}" data-country="${c.country}">${c.name}</option>`).join('');
+            
+            fromSelect.innerHTML = options;
+            toSelect.innerHTML = options;
+
+            // Set Defaults: USD to INR
+            fromSelect.value = "USD";
+            toSelect.value = "INR";
+            updateFlags();
+        }
+
+        function updateFlags() {
+            const fromSelect = document.getElementById('currFrom');
+            const toSelect = document.getElementById('currTo');
+
+            const fromCountry = WORLD_CURRENCIES.find(c => c.code === fromSelect.value)?.country || 'us';
+            const toCountry = WORLD_CURRENCIES.find(c => c.code === toSelect.value)?.country || 'in';
+
+            document.getElementById('currFromFlag').src = `https://flagcdn.com/w40/${fromCountry}.png`;
+            document.getElementById('currToFlag').src = `https://flagcdn.com/w40/${toCountry}.png`;
+        }
+
         // 1. Unit
         function calcUnit() {
             const val = parseFloat(document.getElementById('unitVal').value) || 0;
@@ -638,10 +720,14 @@
         }
 
         function calcCurrency() {
-            if (!exchangeRates.USD) return;
             const amt = parseFloat(document.getElementById('currAmt').value) || 0;
             const from = document.getElementById('currFrom').value;
             const to = document.getElementById('currTo').value;
+
+            if (!exchangeRates[from] || !exchangeRates[to]) {
+                document.getElementById('currOutput').innerText = `-- ${to}`;
+                return;
+            }
 
             const inUSD = amt / exchangeRates[from];
             const result = inUSD * exchangeRates[to];
