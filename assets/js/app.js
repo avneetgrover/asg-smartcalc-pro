@@ -24,6 +24,10 @@ function initApp() {
 
     switchTab('unit');
     lucide.createIcons();
+    switchTab('unit');
+    lucide.createIcons();
+    initThemeSwitcher();
+}
 }
 
 function populateNavigation() {
