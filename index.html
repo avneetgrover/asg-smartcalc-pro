@@ -1,48 +1,716 @@
-<!-- TAB 3: CURRENCY (UPDATED WITH TOGGLE BUTTON) -->
-<div id="panel-currency" class="calc-panel hidden">
-    <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
-        <div class="space-y-4">
-            <div>
-                <label class="text-xs font-bold text-slate-500 uppercase">Amount</label>
-                <input type="number" id="currAmt" value="1" oninput="calcCurrency()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASG SmartCalc Pro - All in one calculator</title>
+    
+    <!-- CALCULATOR FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='16' height='20' x='4' y='2' rx='2'/><line x1='8' x2='16' y1='6' y2='6'/><line x1='16' x2='16' y1='14' y2='18'/><path d='M16 10h.01'/><path d='M12 10h.01'/><path d='M8 10h.01'/><path d='M12 14h.01'/><path d='M8 14h.01'/><path d='M12 18h.01'/><path d='M8 18h.01'/></svg>">
+
+    <!-- Tailwind CSS for UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Visual Infographics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                        },
+                        cyanAccent: '#06b6d4',
+                        magentaAccent: '#ec4899',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full text-slate-800 flex flex-col md:flex-row antialiased font-sans p-2 md:p-6 gap-4">
+
+    <!-- DESKTOP / MOBILE CONTAINER CARD -->
+    <div class="w-full h-full bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col md:flex-row overflow-hidden">
+
+        <!-- MOBILE TOP BAR -->
+        <div class="md:hidden flex items-center justify-between p-4 bg-slate-50 border-b border-slate-200">
+            <div class="flex items-center gap-2">
+                <div class="p-2 bg-gradient-to-tr from-violet-600 to-indigo-500 text-white rounded-xl shadow-md">
+                    <i data-lucide="calculator" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-base tracking-wide text-slate-900 block">ASG SmartCalc</span>
+                    <span class="text-[10px] text-purple-600 font-semibold tracking-tight block -mt-1">All in one calculator</span>
+                </div>
+            </div>
+            <select id="mobileTabSelect" onchange="switchTab(this.value)" class="bg-white text-slate-700 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold shadow-sm outline-none focus:ring-2 focus:ring-purple-500">
+                <!-- Populated via JS -->
+            </select>
+        </div>
+
+        <!-- DESKTOP SIDEBAR -->
+        <aside class="hidden md:flex flex-col w-72 bg-slate-50/80 border-r border-slate-200/80 shrink-0">
+            <div class="p-6 flex items-center gap-3">
+                <div class="p-3 bg-gradient-to-tr from-violet-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="calculator" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold tracking-tight text-slate-900 text-lg leading-tight">ASG SmartCalc</h1>
+                    <p class="text-xs font-bold text-purple-600">All in one calculator</p>
+                </div>
+            </div>
+
+            <!-- Vertical Nav Links -->
+            <nav id="desktopSidebar" class="flex-1 overflow-y-auto px-4 py-2 space-y-1.5">
+                <!-- Dynamic Nav Buttons Injected Here -->
+            </nav>
+
+            <div class="p-5 border-t border-slate-200/80 text-xs text-slate-400 flex justify-between items-center font-medium">
+                <span class="font-mono bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full font-bold">v1.2.1 Pro</span>
+                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-500"></i>
+            </div>
+        </aside>
+
+        <!-- MAIN VIEW AREA -->
+        <main class="flex-1 overflow-y-auto p-5 md:p-10 bg-slate-50/40 flex flex-col justify-between">
+            <div class="max-w-5xl w-full mx-auto space-y-6">
+                
+                <!-- TAB HEADER -->
+                <div class="flex items-center justify-between border-b border-slate-200 pb-5">
+                    <div>
+                        <h2 id="currentTabTitle" class="text-2xl md:text-3xl font-black tracking-tight text-slate-900">Calculator</h2>
+                        <p id="currentTabDesc" class="text-xs md:text-sm font-medium text-slate-500 mt-0.5">Select a tool from the suite to begin.</p>
+                    </div>
+                </div>
+
+                <!-- CALCULATOR PANELS -->
+                <div id="calculatorPanels">
+
+                    <!-- TAB 1: UNIT CONVERTER -->
+                    <div id="panel-unit" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Value</label>
+                                    <input type="number" id="unitVal" value="1" oninput="calcUnit()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 font-bold outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Type</label>
+                                    <select id="unitType" onchange="calcUnit()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-900 font-semibold outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition">
+                                        <option value="length">Length (Meters / Feet / Inches / Km / Miles)</option>
+                                        <option value="weight">Weight (Kg / Lbs / Grams / Ounces)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-violet-50 to-purple-50 p-6 rounded-2xl border border-purple-100 flex flex-col justify-center space-y-3">
+                                <div class="text-xs font-extrabold text-purple-600 tracking-wider uppercase">Conversions</div>
+                                <div id="unitResults" class="text-sm font-semibold space-y-2 text-slate-800">
+                                    <!-- Dynamic Output -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: VOLUME & CBM -->
+                    <div id="panel-cbm" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Length (cm)</label>
+                                        <input type="number" id="cbmL" value="50" oninput="calcCBM()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Width (cm)</label>
+                                        <input type="number" id="cbmW" value="40" oninput="calcCBM()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Height (cm)</label>
+                                        <input type="number" id="cbmH" value="30" oninput="calcCBM()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Quantity (Boxes)</label>
+                                    <input type="number" id="cbmQty" value="10" oninput="calcCBM()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-cyan-50 to-teal-50 p-6 md:p-8 rounded-3xl border border-cyan-100 flex flex-col justify-between">
+                                <div>
+                                    <div class="text-xs font-extrabold text-cyan-700 uppercase tracking-wider">Total Volume</div>
+                                    <div id="cbmResult" class="text-4xl font-black text-cyan-600 font-mono mt-1">0.000 m³</div>
+                                </div>
+                                <div id="cbmWeightResult" class="text-xs font-medium text-slate-600 space-y-1.5 border-t border-cyan-200/60 pt-4"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: CURRENCY CONVERTER (UPDATED WITH SWAP TOGGLE) -->
+                    <div id="panel-currency" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Amount</label>
+                                    <input type="number" id="currAmt" value="1" oninput="calcCurrency()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1">
+                                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">From</label>
+                                        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
+                                            <img id="currFromFlag" src="https://flagcdn.com/w40/us.png" class="w-6 h-4 rounded object-cover border border-slate-200 shrink-0" alt="Flag">
+                                            <select id="currFrom" onchange="updateFlags(); calcCurrency();" class="w-full bg-transparent text-slate-900 font-semibold outline-none py-1 text-sm">
+                                                <!-- Dynamic Currencies -->
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- ⇄ TOGGLE SWAP BUTTON -->
+                                    <div class="pt-5 shrink-0">
+                                        <button type="button" onclick="swapCurrencies()" title="Swap Currencies" class="w-10 h-10 flex items-center justify-center bg-purple-100 hover:bg-purple-600 text-purple-700 hover:text-white rounded-2xl transition-all duration-300 active:scale-90 shadow-sm group">
+                                            <i data-lucide="arrow-left-right" class="w-5 h-5 transition-transform duration-300 group-hover:rotate-180"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="flex-1">
+                                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">To</label>
+                                        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
+                                            <img id="currToFlag" src="https://flagcdn.com/w40/in.png" class="w-6 h-4 rounded object-cover border border-slate-200 shrink-0" alt="Flag">
+                                            <select id="currTo" onchange="updateFlags(); calcCurrency();" class="w-full bg-transparent text-slate-900 font-semibold outline-none py-1 text-sm">
+                                                <!-- Dynamic Currencies -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-2xl border border-emerald-100 flex flex-col justify-center items-center text-center">
+                                <div class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider mb-1">Live Converted Value</div>
+                                <div id="currOutput" class="text-3xl font-black text-emerald-600 font-mono">--</div>
+                                <div id="currStatus" class="text-xs font-medium text-slate-500 mt-2">Fetching exchange rates...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: INVESTMENT & RETURN -->
+                    <div id="panel-invest" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-3">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Initial Capital</label>
+                                    <input type="number" id="invBase" value="10000" oninput="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Commissions</label>
+                                        <input type="number" id="invComm" value="200" oninput="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Expenses/Fees</label>
+                                        <input type="number" id="invExp" value="300" oninput="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Expected Return (%)</label>
+                                        <input type="number" id="invRate" value="12" oninput="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Calculate On</label>
+                                        <select id="invBasis" onchange="calcInvest()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                            <option value="total">Total Outlay</option>
+                                            <option value="base">Initial Capital Only</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-violet-50 to-indigo-50 p-6 md:p-8 rounded-3xl border border-indigo-100 space-y-4 flex flex-col justify-center">
+                                <div class="flex justify-between border-b border-indigo-200/60 pb-3">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Total Outlay:</span>
+                                    <span id="invTotalOutlay" class="font-mono font-bold text-slate-900">$0</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm">
+                                        <div class="text-xs font-bold text-slate-400 uppercase">Monthly Profit</div>
+                                        <div id="invMonthly" class="text-xl font-extrabold text-emerald-600 font-mono mt-1">$0</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm">
+                                        <div class="text-xs font-bold text-slate-400 uppercase">Yearly Profit</div>
+                                        <div id="invYearly" class="text-xl font-extrabold text-emerald-600 font-mono mt-1">$0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: LOAN EMI -->
+                    <div id="panel-emi" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-12 gap-6">
+                            <div class="md:col-span-5 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Loan Amount</label>
+                                    <input type="number" id="emiAmount" value="50000" oninput="calcEMI()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Interest Rate (% p.a.)</label>
+                                    <input type="number" id="emiRate" value="8.5" step="0.1" oninput="calcEMI()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Tenure (Years)</label>
+                                    <input type="number" id="emiTenure" value="5" oninput="calcEMI()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div class="pt-3 border-t border-slate-200">
+                                    <div class="text-xs font-bold text-slate-400 uppercase">Monthly EMI</div>
+                                    <div id="emiOutput" class="text-3xl font-black text-purple-600 font-mono">$0</div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-7 bg-slate-50/80 p-6 rounded-3xl border border-slate-200/80 flex flex-col md:flex-row items-center gap-6">
+                                <div class="w-48 h-48 relative shrink-0">
+                                    <canvas id="emiChart"></canvas>
+                                </div>
+                                <div class="flex-1 space-y-3 w-full">
+                                    <div class="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500 uppercase">Principal Amount</span>
+                                        <span id="emiPrincipalText" class="font-mono font-bold text-slate-900">$0</span>
+                                    </div>
+                                    <div class="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500 uppercase">Total Interest</span>
+                                        <span id="emiInterestText" class="font-mono font-bold text-pink-500">$0</span>
+                                    </div>
+                                    <div class="p-3.5 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500 uppercase">Total Payable</span>
+                                        <span id="emiTotalText" class="font-mono font-bold text-purple-600">$0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 6: MARGIN & MARKUP -->
+                    <div id="panel-margin" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Cost Price ($)</label>
+                                    <input type="number" id="marginCost" value="80" oninput="calcMargin()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Selling Price ($)</label>
+                                    <input type="number" id="marginSell" value="120" oninput="calcMargin()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-pink-50 to-rose-50 p-6 rounded-2xl border border-pink-100 flex flex-col justify-center space-y-4">
+                                <div class="flex justify-between border-b border-pink-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Gross Profit:</span>
+                                    <span id="marginProfit" class="font-mono font-bold text-emerald-600">$0</span>
+                                </div>
+                                <div class="flex justify-between border-b border-pink-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Gross Margin:</span>
+                                    <span id="marginMargin" class="font-mono font-bold text-purple-600">0%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Markup:</span>
+                                    <span id="marginMarkup" class="font-mono font-bold text-pink-600">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 7: GST / TAX -->
+                    <div id="panel-gst" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Amount ($)</label>
+                                    <input type="number" id="gstAmt" value="1000" oninput="calcGST()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Tax Rate (%)</label>
+                                    <input type="number" id="gstRate" value="18" oninput="calcGST()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Calculation Type</label>
+                                    <select id="gstType" onchange="calcGST()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="exclusive">Exclusive (Add GST)</option>
+                                        <option value="inclusive">Inclusive (Extract GST)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-100 flex flex-col justify-center space-y-4">
+                                <div class="flex justify-between border-b border-amber-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Net Amount:</span>
+                                    <span id="gstNet" class="font-mono font-bold text-slate-900">$0</span>
+                                </div>
+                                <div class="flex justify-between border-b border-amber-200/60 pb-2">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Tax Amount:</span>
+                                    <span id="gstTax" class="font-mono font-bold text-amber-600">$0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-xs font-bold text-slate-500 uppercase">Total Gross Amount:</span>
+                                    <span id="gstTotal" class="font-mono font-bold text-purple-600">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 8: FREIGHT WEIGHT -->
+                    <div id="panel-freight" class="calc-panel hidden">
+                        <div class="grid md:grid-cols-2 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-slate-200/80 shadow-sm">
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">L (cm)</label>
+                                        <input type="number" id="frL" value="60" oninput="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">W (cm)</label>
+                                        <input type="number" id="frW" value="50" oninput="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">H (cm)</label>
+                                        <input type="number" id="frH" value="40" oninput="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Actual Weight (kg)</label>
+                                    <input type="number" id="frAct" value="15" oninput="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Courier Divisor</label>
+                                    <select id="frDivisor" onchange="calcFreight()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 font-semibold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
+                                        <option value="5000">5000 (Standard Express / DHL / FedEx)</option>
+                                        <option value="6000">6000 (Air Cargo Standard)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-br from-cyan-50 to-blue-50 p-6 rounded-2xl border border-cyan-100 flex flex-col justify-center space-y-4">
+                                <div>
+                                    <div class="text-xs font-bold text-slate-400 uppercase">Volumetric Weight</div>
+                                    <div id="frVolWeight" class="text-2xl font-black font-mono text-slate-900 mt-1">0 kg</div>
+                                </div>
+                                <div class="border-t border-cyan-200/60 pt-3">
+                                    <div class="text-xs font-extrabold text-cyan-700 uppercase tracking-wider">Billable Weight</div>
+                                    <div id="frBillable" class="text-3xl font-black font-mono text-purple-600 mt-1">0 kg</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
             
-            <div class="flex items-center gap-2">
-                <!-- FROM CURRENCY -->
-                <div class="flex-1">
-                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">From</label>
-                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
-                        <img id="currFromFlag" src="https://flagcdn.com/w40/us.png" class="w-6 h-4 rounded object-cover border border-slate-200 shrink-0" alt="Flag">
-                        <select id="currFrom" onchange="updateFlags(); calcCurrency();" class="w-full bg-transparent text-slate-900 font-semibold outline-none py-1 text-sm">
-                            <!-- Dynamic Global Currencies -->
-                        </select>
-                    </div>
-                </div>
-
-                <!-- ⇄ TOGGLE BUTTON -->
-                <div class="pt-5 shrink-0">
-                    <button type="button" onclick="swapCurrencies()" title="Swap Currencies" class="w-10 h-10 flex items-center justify-center bg-purple-100 hover:bg-purple-600 text-purple-700 hover:text-white rounded-2xl transition-all duration-200 transform hover:rotate-180 active:scale-95 shadow-sm">
-                        <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
-                    </button>
-                </div>
-
-                <!-- TO CURRENCY -->
-                <div class="flex-1">
-                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">To</label>
-                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
-                        <img id="currToFlag" src="https://flagcdn.com/w40/in.png" class="w-6 h-4 rounded object-cover border border-slate-200 shrink-0" alt="Flag">
-                        <select id="currTo" onchange="updateFlags(); calcCurrency();" class="w-full bg-transparent text-slate-900 font-semibold outline-none py-1 text-sm">
-                            <!-- Dynamic Global Currencies -->
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-2xl border border-emerald-100 flex flex-col justify-center items-center text-center">
-            <div class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider mb-1">Live Converted Value</div>
-            <div id="currOutput" class="text-3xl font-black text-emerald-600 font-mono">--</div>
-            <div id="currStatus" class="text-xs font-medium text-slate-500 mt-2">Fetching exchange rates...</div>
-        </div>
+            <footer class="mt-8 text-center text-xs text-slate-400 font-medium">
+                ASG SmartCalc Pro &copy; All-in-one Web Application
+            </footer>
+        </main>
     </div>
-</div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const tabs = [
+            { id: 'unit', name: 'Unit Converter', desc: 'Convert lengths, weights, and measurements', icon: 'scale' },
+            { id: 'cbm', name: 'Volume & CBM', desc: 'Calculate shipping volume & volumetric weight', icon: 'box' },
+            { id: 'currency', name: 'Currency Exchange', desc: 'Live global exchange rate conversion', icon: 'coins' },
+            { id: 'invest', name: 'Investment ROI', desc: 'Project yield, net profits & annual return', icon: 'trending-up' },
+            { id: 'emi', name: 'Loan EMI Calc', desc: 'Amortization, principal & interest breakdown', icon: 'landmark' },
+            { id: 'margin', name: 'Margin & Markup', desc: 'Pricing strategy, gross margin & profits', icon: 'pie-chart' },
+            { id: 'gst', name: 'GST & Sales Tax', desc: 'Tax inclusion and exclusion calculations', icon: 'receipt' },
+            { id: 'freight', name: 'Freight Weight', desc: 'Volumetric vs Actual billable freight weight', icon: 'truck' }
+        ];
+
+        const currencies = [
+            { code: 'USD', country: 'us', name: 'USD - US Dollar' },
+            { code: 'INR', country: 'in', name: 'INR - Indian Rupee' },
+            { code: 'EUR', country: 'eu', name: 'EUR - Euro' },
+            { code: 'GBP', country: 'gb', name: 'GBP - British Pound' },
+            { code: 'CAD', country: 'ca', name: 'CAD - Canadian Dollar' },
+            { code: 'AUD', country: 'au', name: 'AUD - Australian Dollar' },
+            { code: 'AED', country: 'ae', name: 'AED - UAE Dirham' },
+            { code: 'SGD', country: 'sg', name: 'SGD - Singapore Dollar' },
+            { code: 'CNY', country: 'cn', name: 'CNY - Chinese Yuan' },
+            { code: 'JPY', country: 'jp', name: 'JPY - Japanese Yen' }
+        ];
+
+        let emiChartInstance = null;
+
+        function initApp() {
+            populateNavigation();
+            populateCurrencies();
+            switchTab('unit');
+            lucide.createIcons();
+            
+            // Initial Calculations
+            calcUnit();
+            calcCBM();
+            calcCurrency();
+            calcInvest();
+            calcEMI();
+            calcMargin();
+            calcGST();
+            calcFreight();
+        }
+
+        function populateNavigation() {
+            const sidebar = document.getElementById('desktopSidebar');
+            const mobileSelect = document.getElementById('mobileTabSelect');
+            
+            sidebar.innerHTML = '';
+            mobileSelect.innerHTML = '';
+
+            tabs.forEach(t => {
+                // Sidebar
+                const btn = document.createElement('button');
+                btn.id = `nav-${t.id}`;
+                btn.onclick = () => switchTab(t.id);
+                btn.className = `w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-bold transition-all duration-200 text-left`;
+                btn.innerHTML = `<i data-lucide="${t.icon}" class="w-4 h-4"></i><span>${t.name}</span>`;
+                sidebar.appendChild(btn);
+
+                // Mobile
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name;
+                mobileSelect.appendChild(opt);
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.calc-panel').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`panel-${tabId}`).classList.remove('hidden');
+
+            tabs.forEach(t => {
+                const btn = document.getElementById(`nav-${t.id}`);
+                if (t.id === tabId) {
+                    btn.className = `w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-bold transition-all duration-200 text-left bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/20`;
+                } else {
+                    btn.className = `w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-bold transition-all duration-200 text-left text-slate-600 hover:bg-slate-200/60 hover:text-slate-900`;
+                }
+            });
+
+            const active = tabs.find(t => t.id === tabId);
+            document.getElementById('currentTabTitle').textContent = active.name;
+            document.getElementById('currentTabDesc').textContent = active.desc;
+            document.getElementById('mobileTabSelect').value = tabId;
+        }
+
+        // --- CURRENCY CONVERTER CODE ---
+        function populateCurrencies() {
+            const fromSelect = document.getElementById('currFrom');
+            const toSelect = document.getElementById('currTo');
+            
+            fromSelect.innerHTML = '';
+            toSelect.innerHTML = '';
+
+            currencies.forEach(c => {
+                fromSelect.appendChild(new Option(c.name, c.code));
+                toSelect.appendChild(new Option(c.name, c.code));
+            });
+
+            fromSelect.value = 'USD';
+            toSelect.value = 'INR';
+            updateFlags();
+        }
+
+        function updateFlags() {
+            const fromCode = document.getElementById('currFrom').value;
+            const toCode = document.getElementById('currTo').value;
+
+            const fromCurr = currencies.find(c => c.code === fromCode);
+            const toCurr = currencies.find(c => c.code === toCode);
+
+            if(fromCurr) document.getElementById('currFromFlag').src = `https://flagcdn.com/w40/${fromCurr.country}.png`;
+            if(toCurr) document.getElementById('currToFlag').src = `https://flagcdn.com/w40/${toCurr.country}.png`;
+        }
+
+        function swapCurrencies() {
+            const fromSelect = document.getElementById('currFrom');
+            const toSelect = document.getElementById('currTo');
+
+            const temp = fromSelect.value;
+            fromSelect.value = toSelect.value;
+            toSelect.value = temp;
+
+            updateFlags();
+            calcCurrency();
+        }
+
+        async function calcCurrency() {
+            const amt = parseFloat(document.getElementById('currAmt').value) || 0;
+            const from = document.getElementById('currFrom').value;
+            const to = document.getElementById('currTo').value;
+            const output = document.getElementById('currOutput');
+            const status = document.getElementById('currStatus');
+
+            try {
+                status.textContent = 'Updating exchange rates...';
+                const res = await fetch(`https://open.er-api.com/v6/latest/${from}`);
+                const data = await res.json();
+
+                if (data && data.rates && data.rates[to]) {
+                    const rate = data.rates[to];
+                    const converted = (amt * rate).toFixed(2);
+                    output.textContent = `${to} ${converted}`;
+                    status.textContent = `1 ${from} = ${rate.toFixed(4)} ${to}`;
+                } else {
+                    output.textContent = 'N/A';
+                    status.textContent = 'Rate unavailable';
+                }
+            } catch (err) {
+                output.textContent = 'Error';
+                status.textContent = 'Connection error';
+            }
+        }
+
+        // --- OTHER CALCULATOR LOGIC ---
+        function calcUnit() {
+            const val = parseFloat(document.getElementById('unitVal').value) || 0;
+            const type = document.getElementById('unitType').value;
+            const res = document.getElementById('unitResults');
+
+            if (type === 'length') {
+                res.innerHTML = `
+                    <div>• <strong>Meters:</strong> ${val.toFixed(2)} m</div>
+                    <div>• <strong>Feet:</strong> ${(val * 3.28084).toFixed(2)} ft</div>
+                    <div>• <strong>Inches:</strong> ${(val * 39.3701).toFixed(2)} in</div>
+                    <div>• <strong>Kilometers:</strong> ${(val / 1000).toFixed(4)} km</div>
+                    <div>• <strong>Miles:</strong> ${(val * 0.000621371).toFixed(4)} mi</div>
+                `;
+            } else {
+                res.innerHTML = `
+                    <div>• <strong>Kilograms:</strong> ${val.toFixed(2)} kg</div>
+                    <div>• <strong>Pounds:</strong> ${(val * 2.20462).toFixed(2)} lbs</div>
+                    <div>• <strong>Grams:</strong> ${(val * 1000).toFixed(0)} g</div>
+                    <div>• <strong>Ounces:</strong> ${(val * 35.274).toFixed(2)} oz</div>
+                `;
+            }
+        }
+
+        function calcCBM() {
+            const l = parseFloat(document.getElementById('cbmL').value) || 0;
+            const w = parseFloat(document.getElementById('cbmW').value) || 0;
+            const h = parseFloat(document.getElementById('cbmH').value) || 0;
+            const qty = parseFloat(document.getElementById('cbmQty').value) || 0;
+
+            const singleCBM = (l * w * h) / 1000000;
+            const totalCBM = singleCBM * qty;
+
+            document.getElementById('cbmResult').textContent = `${totalCBM.toFixed(3)} m³`;
+            document.getElementById('cbmWeightResult').innerHTML = `
+                <div>Volumetric Air Cargo Weight: <strong>${(totalCBM * 167).toFixed(1)} kg</strong></div>
+                <div>Volumetric Express Courier Weight: <strong>${(totalCBM * 200).toFixed(1)} kg</strong></div>
+            `;
+        }
+
+        function calcInvest() {
+            const base = parseFloat(document.getElementById('invBase').value) || 0;
+            const comm = parseFloat(document.getElementById('invComm').value) || 0;
+            const exp = parseFloat(document.getElementById('invExp').value) || 0;
+            const rate = parseFloat(document.getElementById('invRate').value) || 0;
+            const basis = document.getElementById('invBasis').value;
+
+            const totalOutlay = base + comm + exp;
+            const calcBasis = basis === 'total' ? totalOutlay : base;
+            const yearly = calcBasis * (rate / 100);
+            const monthly = yearly / 12;
+
+            document.getElementById('invTotalOutlay').textContent = `$${totalOutlay.toLocaleString()}`;
+            document.getElementById('invMonthly').textContent = `$${monthly.toFixed(2)}`;
+            document.getElementById('invYearly').textContent = `$${yearly.toFixed(2)}`;
+        }
+
+        function calcEMI() {
+            const p = parseFloat(document.getElementById('emiAmount').value) || 0;
+            const r = (parseFloat(document.getElementById('emiRate').value) || 0) / 12 / 100;
+            const n = (parseFloat(document.getElementById('emiTenure').value) || 0) * 12;
+
+            if (p <= 0 || r <= 0 || n <= 0) return;
+
+            const emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            const totalPayable = emi * n;
+            const totalInterest = totalPayable - p;
+
+            document.getElementById('emiOutput').textContent = `$${Math.round(emi).toLocaleString()}`;
+            document.getElementById('emiPrincipalText').textContent = `$${p.toLocaleString()}`;
+            document.getElementById('emiInterestText').textContent = `$${Math.round(totalInterest).toLocaleString()}`;
+            document.getElementById('emiTotalText').textContent = `$${Math.round(totalPayable).toLocaleString()}`;
+
+            // Chart
+            const ctx = document.getElementById('emiChart').getContext('2d');
+            if (emiChartInstance) emiChartInstance.destroy();
+            
+            emiChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                        data: [p, totalInterest],
+                        backgroundColor: ['#7c3aed', '#ec4899'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function calcMargin() {
+            const cost = parseFloat(document.getElementById('marginCost').value) || 0;
+            const sell = parseFloat(document.getElementById('marginSell').value) || 0;
+
+            const profit = sell - cost;
+            const margin = sell > 0 ? (profit / sell) * 100 : 0;
+            const markup = cost > 0 ? (profit / cost) * 100 : 0;
+
+            document.getElementById('marginProfit').textContent = `$${profit.toFixed(2)}`;
+            document.getElementById('marginMargin').textContent = `${margin.toFixed(2)}%`;
+            document.getElementById('marginMarkup').textContent = `${markup.toFixed(2)}%`;
+        }
+
+        function calcGST() {
+            const amt = parseFloat(document.getElementById('gstAmt').value) || 0;
+            const rate = parseFloat(document.getElementById('gstRate').value) || 0;
+            const type = document.getElementById('gstType').value;
+
+            let net = 0, tax = 0, total = 0;
+
+            if (type === 'exclusive') {
+                net = amt;
+                tax = amt * (rate / 100);
+                total = net + tax;
+            } else {
+                total = amt;
+                net = amt / (1 + (rate / 100));
+                tax = total - net;
+            }
+
+            document.getElementById('gstNet').textContent = `$${net.toFixed(2)}`;
+            document.getElementById('gstTax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('gstTotal').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function calcFreight() {
+            const l = parseFloat(document.getElementById('frL').value) || 0;
+            const w = parseFloat(document.getElementById('frW').value) || 0;
+            const h = parseFloat(document.getElementById('frH').value) || 0;
+            const act = parseFloat(document.getElementById('frAct').value) || 0;
+            const div = parseFloat(document.getElementById('frDivisor').value) || 5000;
+
+            const vol = (l * w * h) / div;
+            const billable = Math.max(act, vol);
+
+            document.getElementById('frVolWeight').textContent = `${vol.toFixed(2)} kg`;
+            document.getElementById('frBillable').textContent = `${billable.toFixed(2)} kg`;
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
