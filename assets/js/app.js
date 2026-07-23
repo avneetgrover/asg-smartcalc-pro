@@ -24,10 +24,7 @@ function initApp() {
 
     switchTab('unit');
     lucide.createIcons();
-    switchTab('unit');
-    lucide.createIcons();
     initThemeSwitcher();
-}
 }
 
 function populateNavigation() {
@@ -77,5 +74,34 @@ function switchTab(tabId) {
         document.getElementById('mobileTabSelect').value = tabId;
     }
 }
+function initThemeSwitcher() {
+    const themeKey = 'asg_theme';
+    const selects = [
+        document.getElementById('themeSelectDesktop'),
+        document.getElementById('themeSelectMobile')
+    ].filter(Boolean);
 
+    function applyTheme(theme) {
+        const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', isDark);
+        selects.forEach(s => s.value = theme);
+    }
+
+    const currentTheme = localStorage.getItem(themeKey) || 'system';
+    applyTheme(currentTheme);
+
+    selects.forEach(select => {
+        select.addEventListener('change', (e) => {
+            const selected = e.target.value;
+            localStorage.setItem(themeKey, selected);
+            applyTheme(selected);
+        });
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if ((localStorage.getItem(themeKey) || 'system') === 'system') {
+            applyTheme('system');
+        }
+    });
+}
 window.addEventListener('DOMContentLoaded', initApp);
