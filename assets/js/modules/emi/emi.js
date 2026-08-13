@@ -72,6 +72,7 @@ window.setEmiCurrency = function(symbol) {
     calculateEmi();
 };
 
+// Fixed: Attached explicitly to window so onclick="setTenureUnit(...)" works
 window.setTenureUnit = function(unit) {
     currentTenureUnit = unit;
     const btnYears = document.getElementById('tenure-unit-years');
@@ -98,10 +99,12 @@ window.resetEmiCalculator = function() {
     const rateInput = document.getElementById('emiRate');
     const tenureInput = document.getElementById('emiTenure');
 
-    if (amountInput) amountInput.value = '0';
-    if (rateInput) rateInput.value = '0';
-    if (tenureInput) tenureInput.value = '0';
-
+    if (amountInput) amountInput.value = '100000';
+    if (rateInput) rateInput.value = '12';
+    if (tenureInput) tenureInput.value = '5';
+    
+    currentTenureUnit = 'years';
+    window.setTenureUnit('years');
     calculateEmi();
 };
 
