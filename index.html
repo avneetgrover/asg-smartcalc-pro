@@ -212,68 +212,69 @@
     </div>
 </div>
 
-                    <!-- CURRENCY PANEL -->
-                    <div id="panel-currency" class="calc-panel hidden">
-                        <div class="grid md:grid-cols-2 gap-6 bg-white dark:bg-slate-800/80 p-6 md:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Amount</label>
-                                    <input type="number" id="currAmt" value="1" class="w-full bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 text-slate-900 dark:text-slate-100 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="flex-1">
-                                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1 block">From</label>
-                                        <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
-                                            <img id="currFromFlag" src="https://flagcdn.com/w40/us.png" class="w-6 h-4 rounded object-cover border border-slate-200 shrink-0">
-                                            <select id="currFrom" class="w-full bg-transparent text-slate-900 dark:text-slate-100 font-semibold outline-none py-1 text-sm"></select>
-                                        </div>
-                                    </div>
-                                    <div class="pt-5 shrink-0">
-                                        <button type="button" id="currSwapBtn" class="w-10 h-10 flex items-center justify-center bg-purple-100 dark:bg-purple-900/50 hover:bg-purple-600 text-purple-700 dark:text-purple-300 hover:text-white rounded-2xl transition-all duration-300 active:scale-90 shadow-sm group">
-                                            <i data-lucide="arrow-left-right" class="w-5 h-5 transition-transform duration-300 group-hover:rotate-180"></i>
-                                        </button>
-                                    </div>
-                                    <div class="flex-1">
-                                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1 block">To</label>
-                                        <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
-                                            <img id="currToFlag" src="https://flagcdn.com/w40/in.png" class="w-6 h-4 rounded object-cover border border-slate-200 shrink-0">
-                                            <select id="currTo" class="w-full bg-transparent text-slate-900 dark:text-slate-100 font-semibold outline-none py-1 text-sm"></select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Currency Exchange POS Receipt Summary -->
-    <div id="print-section-currency" class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between font-mono relative overflow-hidden">
-        <div>
-            <div class="text-center pb-4 mb-4 border-b border-dashed border-slate-200 dark:border-slate-800">
-                <h3 class="text-xs font-bold tracking-widest text-slate-900 dark:text-white uppercase">ASG SMARTCALC PRO</h3>
-                <p class="text-[10px] tracking-wider text-slate-400 mt-1 uppercase">Foreign Exchange Receipt</p>
-                <p class="text-[9px] text-slate-400 mt-0.5" id="receipt-date-currency"></p>
+                    <!-- CURRENCY EXCHANGE PANEL -->
+<div id="panel-currency" class="calc-panel hidden">
+    <div class="grid md:grid-cols-2 gap-6 bg-white dark:bg-slate-800/80 p-6 md:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Amount</label>
+                <input type="number" id="currAmt" value="1" class="w-full bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 text-slate-900 dark:text-slate-100 font-bold mt-1 outline-none focus:ring-2 focus:ring-purple-500">
             </div>
-
-            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Exchange Breakdown</div>
-            
-            <!-- Converted Value Output -->
-            <div class="mb-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl text-center border border-slate-100 dark:border-slate-800">
-                <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider block">CONVERTED VALUE</span>
-                <div id="currOutput" class="text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1">--</div>
-                <div id="currStatus" class="text-[10px] text-slate-400 mt-1">Fetching live rates...</div>
+            <div class="flex items-center gap-2">
+                <div class="flex-1">
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1 block">From</label>
+                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
+                        <img id="currFromFlag" src="https://flagcdn.com/w40/us.png" class="w-6 h-4 rounded object-cover border border-slate-200 shrink-0">
+                        <select id="currFrom" class="w-full bg-transparent text-slate-900 dark:text-slate-100 font-semibold outline-none py-1 text-sm"></select>
+                    </div>
+                </div>
+                <div class="pt-5 shrink-0">
+                    <button type="button" id="currSwapBtn" class="w-10 h-10 flex items-center justify-center bg-purple-100 dark:bg-purple-900/50 hover:bg-purple-600 text-purple-700 dark:text-purple-300 hover:text-white rounded-2xl transition-all duration-300 active:scale-90 shadow-sm group">
+                        <i data-lucide="arrow-left-right" class="w-5 h-5 transition-transform duration-300 group-hover:rotate-180"></i>
+                    </button>
+                </div>
+                <div class="flex-1">
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1 block">To</label>
+                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-purple-500">
+                        <img id="currToFlag" src="https://flagcdn.com/w40/in.png" class="w-6 h-4 rounded object-cover border border-slate-200 shrink-0">
+                        <select id="currTo" class="w-full bg-transparent text-slate-900 dark:text-slate-100 font-semibold outline-none py-1 text-sm"></select>
+                    </div>
+                </div>
             </div>
-
-            <!-- Dynamic List Container -->
-            <div id="currResults" class="text-xs font-semibold space-y-2 text-slate-800 dark:text-slate-200 mb-6"></div>
         </div>
 
-        <!-- Action Toolbar -->
-        <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 font-sans">
-            <button type="button" onclick="window.print()" class="flex-1 py-2.5 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
-                Print Receipt
-            </button>
-            <button type="button" onclick="shareCalculation('currency')" class="flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-300 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
-                Share Receipt
-            </button>
+        <!-- Currency Exchange POS Receipt Summary -->
+        <div id="print-section-currency" class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between font-mono relative overflow-hidden">
+            <div>
+                <div class="text-center pb-4 mb-4 border-b border-dashed border-slate-200 dark:border-slate-800">
+                    <h3 class="text-xs font-bold tracking-widest text-slate-900 dark:text-white uppercase">ASG SMARTCALC PRO</h3>
+                    <p class="text-[10px] tracking-wider text-slate-400 mt-1 uppercase">Foreign Exchange Receipt</p>
+                    <p class="text-[9px] text-slate-400 mt-0.5" id="receipt-date-currency"></p>
+                </div>
+
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Exchange Breakdown</div>
+                
+                <div class="mb-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl text-center border border-slate-100 dark:border-slate-800">
+                    <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider block">CONVERTED VALUE</span>
+                    <div id="currOutput" class="text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1">--</div>
+                    <div id="currStatus" class="text-[10px] text-slate-400 mt-1">Fetching live rates...</div>
+                </div>
+
+                <div id="currResults" class="text-xs font-semibold space-y-2 text-slate-800 dark:text-slate-200 mb-6"></div>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 font-sans">
+                <button type="button" onclick="window.print()" class="flex-1 py-2.5 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
+                    Print Receipt
+                </button>
+                <button type="button" onclick="shareCalculation('currency')" class="flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-300 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
+                    Share Receipt
+                </button>
+            </div>
         </div>
     </div>
+</div>
 
                    <!-- LOAN EMI CALCULATOR PANEL -->
 <div id="panel-emi" class="calc-panel hidden">
