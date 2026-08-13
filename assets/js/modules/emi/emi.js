@@ -1,5 +1,6 @@
 let currentCategory = 'home';
-let currentInterestType = 'fixed';
+let currentInterestType = 'variable';
+let currentStandard = 'standard';
 let currentCurrency = '$';
 
 export function initEmiCalculator() {
@@ -55,6 +56,21 @@ window.setInterestType = function(type) {
     calculateEmi();
 };
 
+window.setCalculationStandard = function(standard) {
+    currentStandard = standard;
+    ['standard', 'alternative'].forEach(s => {
+        const btn = document.getElementById(`std-${s}`);
+        if (btn) {
+            if (s === standard) {
+                btn.className = 'py-2.5 text-xs font-bold rounded-xl transition-all bg-white dark:bg-slate-800 text-purple-600 shadow-sm';
+            } else {
+                btn.className = 'py-2.5 text-xs font-bold rounded-xl transition-all text-slate-600 dark:text-slate-400';
+            }
+        }
+    });
+    calculateEmi();
+};
+
 window.setEmiCurrency = function(symbol) {
     currentCurrency = symbol;
     ['USD', 'EUR', 'GBP', 'INR', 'CAD', 'AUD'].forEach(cur => {
@@ -99,7 +115,7 @@ function calculateEmi() {
         let monthlyPrincipal = months > 0 ? p / months : 0;
         let monthlyInt = months > 0 ? totalInterest / months : 0;
 
-        for (let i = 1; i <= Math.min(months, 120); i++) {
+        for (let i = 1; i <= Math.min(months, 360); i++) {
             balance -= monthlyPrincipal;
             scheduleHtml += `
                 <tr>
@@ -112,7 +128,14 @@ function calculateEmi() {
         }
     } else {
         if (monthlyRate > 0 && months > 0) {
+            // Standard Amortization Formula
             emi = (p * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+            
+            // If alternative regional day-count convention is chosen (e.g. 360-day adjustment factor)
+            if (currentStandard === 'alternative') {
+                emi = emi * (365 / 360); 
+            }
+
             totalPayable = emi * months;
             totalInterest = totalPayable - p;
         } else {
@@ -120,7 +143,7 @@ function calculateEmi() {
             totalPayable = p;
         }
 
-        for (let i = 1; i <= Math.min(months, 120); i++) {
+        for (let i = 1; i <= Math.min(months, 360); i++) {
             let interestComponent = balance * monthlyRate;
             let principalComponent = emi - interestComponent;
             balance -= principalComponent;
