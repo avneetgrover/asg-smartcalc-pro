@@ -178,4 +178,29 @@ function calculateEmi() {
     if (intEl) intEl.textContent = `${currentCurrency}${Math.round(totalInterest).toLocaleString()}`;
     if (totEl) totEl.textContent = `${currentCurrency}${Math.round(totalPayable).toLocaleString()}`;
     if (tbody) tbody.innerHTML = scheduleHtml;
+
+    window.shareCalculation = function(type) {
+    let textToShare = '';
+    
+    if (type === 'emi') {
+        const payment = document.getElementById('emiOutput')?.textContent || '';
+        const label = document.getElementById('emiLabelText')?.textContent || 'PAYMENT';
+        const principal = document.getElementById('emiPrincipalText')?.textContent || '';
+        const interest = document.getElementById('emiInterestText')?.textContent || '';
+        const total = document.getElementById('emiTotalText')?.textContent || '';
+        
+        textToShare = `ASG SmartCalc Pro - Loan EMI Breakdown:\n- ${label}: ${payment}\n- Principal: ${principal}\n- Total Interest: ${interest}\n- Total Payable: ${total}`;
+    }
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'Calculation Result',
+            text: textToShare
+        }).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(textToShare).then(() => {
+            alert('Calculation breakdown copied to clipboard!');
+        });
+    }
+};
 }
