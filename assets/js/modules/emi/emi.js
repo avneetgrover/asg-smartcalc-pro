@@ -117,7 +117,6 @@ function calculateEmi() {
     const annualRate = parseFloat(document.getElementById('emiRate')?.value) || 0;
     const rawTenure = parseFloat(document.getElementById('emiTenure')?.value) || 0;
     
-    // Convert tenure to total years based on selected unit
     const totalYears = currentTenureUnit === 'months' ? rawTenure / 12 : rawTenure;
 
     let periodsPerYear = 12;
