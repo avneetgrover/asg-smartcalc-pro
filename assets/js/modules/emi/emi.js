@@ -204,3 +204,53 @@ function calculateEmi() {
     }
 };
 }
+
+window.shareCalculation = async function(type) {
+    const printSection = document.getElementById('print-section');
+    if (!printSection) return;
+
+    try {
+        // Hide the buttons temporarily so they don't appear in the captured image
+        const buttonsToolbar = printSection.querySelector('.border-t.mt-8');
+        if (buttonsToolbar) buttonsToolbar.style.display = 'none';
+
+        const canvas = await html2canvas(printSection, {
+            scale: 2, // Crisp high resolution
+            useCORS: true,
+            backgroundColor: null
+        });
+
+        if (buttonsToolbar) buttonsToolbar.style.display = 'flex';
+
+        canvas.toBlob(async (blob) => {
+            const file = new File([blob], 'loan-summary.png', { type: 'image/png' });
+            
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        title: 'Loan EMI Summary',
+                        text: 'Here is my calculation breakdown from ASG SmartCalc Pro',
+                        files: [file]
+                    });
+                } catch (err) {
+                    if (err.name !== 'AbortError') triggerDownload(blob);
+                }
+            } else {
+                triggerDownload(blob);
+            }
+        }, 'image/png');
+    } catch (error) {
+        console.error('Error capturing summary:', error);
+    }
+};
+
+function triggerDownload(blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'loan-summary.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
