@@ -470,7 +470,6 @@
         function downloadSchedulePDF() {
             const originalElement = document.getElementById('schedule-table-printable');
             if (typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined') {
-                // Clone the element to render the full unfiltered table content off-screen
                 const clone = originalElement.cloneNode(true);
                 clone.style.maxHeight = 'none';
                 clone.style.height = 'auto';
@@ -487,7 +486,7 @@
                     const { jsPDF } = window.jspdf;
                     const pdf = new jsPDF('p', 'mm', 'a4');
                     
-                    const imgWidth = 190; // A4 size width in mm with margins
+                    const imgWidth = 190;
                     const pageHeight = 295; 
                     const imgHeight = (canvas.height * imgWidth) / canvas.width;
                     let heightLeft = imgHeight;
