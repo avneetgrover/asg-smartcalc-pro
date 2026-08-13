@@ -180,54 +180,15 @@ function calculateEmi() {
     if (intEl) intEl.textContent = `${currentCurrency}${Math.round(totalInterest).toLocaleString()}`;
     if (totEl) totEl.textContent = `${currentCurrency}${Math.round(totalPayable).toLocaleString()}`;
     if (tbody) tbody.innerHTML = scheduleHtml;
-}
 
-window.shareCalculation = async function(type) {
-    const printSection = document.getElementById('print-section');
-    if (!printSection) return;
+    // Synchronize full calculation parameters to the receipt view
+    const catEl = document.getElementById('receiptCategory');
+    const freqEl = document.getElementById('receiptFrequency');
+    const rateEl = document.getElementById('receiptRate');
+    const tenureEl = document.getElementById('receiptTenure');
 
-    try {
-        // Temporarily hide action buttons from receipt capture
-        const buttonsToolbar = printSection.querySelector('.font-sans');
-        if (buttonsToolbar) buttonsToolbar.style.display = 'none';
-
-        const canvas = await html2canvas(printSection, {
-            scale: 2, // High resolution capture
-            useCORS: true,
-            backgroundColor: null
-        });
-
-        if (buttonsToolbar) buttonsToolbar.style.display = 'flex';
-
-        canvas.toBlob(async (blob) => {
-            const file = new File([blob], 'receipt-summary.png', { type: 'image/png' });
-            
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        title: 'Transaction Receipt',
-                        text: 'Here is my transaction receipt from ASG SmartCalc Pro',
-                        files: [file]
-                    });
-                } catch (err) {
-                    if (err.name !== 'AbortError') triggerDownload(blob);
-                }
-            } else {
-                triggerDownload(blob);
-            }
-        }, 'image/png');
-    } catch (error) {
-        console.error('Error capturing receipt image:', error);
-    }
-};
-
-function triggerDownload(blob) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'receipt-summary.png';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    if (catEl) catEl.textContent = currentCategory.toUpperCase() + ' LOAN';
+    if (freqEl) freqEl.textContent = currentFrequency.charAt(0).toUpperCase() + currentFrequency.slice(1);
+    if (rateEl) rateEl.textContent = annualRate + '% p.a.';
+    if (tenureEl) tenureEl.textContent = rawTenure + ' ' + currentTenureUnit;
 }
