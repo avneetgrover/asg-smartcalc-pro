@@ -76,9 +76,9 @@ window.resetEmiCalculator = function() {
     const rateInput = document.getElementById('emiRate');
     const tenureInput = document.getElementById('emiTenure');
 
-    if (amountInput) amountInput.value = 0;
-    if (rateInput) rateInput.value = 0;
-    if (tenureInput) tenureInput.value = 0;
+    if (amountInput) amountInput.value = '0';
+    if (rateInput) rateInput.value = '0';
+    if (tenureInput) tenureInput.value = '0';
 
     calculateEmi();
 };
