@@ -412,9 +412,17 @@
                         <div id="schedule-modal" class="hidden mt-4 bg-white dark:bg-slate-800/90 p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl">
                             <div class="flex justify-between items-center mb-3">
                                 <h3 class="font-bold text-xs text-slate-900 dark:text-white">Amortization & Repayment Schedule</h3>
-                                <button onclick="toggleScheduleModal()" class="text-xs font-bold text-purple-600 hover:underline">Close</button>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="printScheduleTable()" class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold text-[11px] rounded-lg transition-all flex items-center gap-1">
+                                        <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print
+                                    </button>
+                                    <button onclick="downloadSchedulePDF()" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] rounded-lg transition-all flex items-center gap-1 shadow-sm">
+                                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i> PDF / Canvas
+                                    </button>
+                                    <button onclick="toggleScheduleModal()" class="text-xs font-bold text-purple-600 hover:underline ml-2">Close</button>
+                                </div>
                             </div>
-                            <div class="max-h-48 overflow-y-auto">
+                            <div id="schedule-table-printable" class="max-h-48 overflow-y-auto">
                                 <table class="w-full text-left text-xs">
                                     <thead class="bg-slate-50 dark:bg-slate-900 text-slate-400 uppercase">
                                         <tr>
@@ -439,6 +447,39 @@
             </div>
         </main>
     </div>
+
+    <!-- Additional JavaScript helpers for schedule print/PDF download -->
+    <script>
+        function printScheduleTable() {
+            const printContent = document.getElementById('schedule-table-printable').innerHTML;
+            const originalContent = document.body.innerHTML;
+            
+            document.body.innerHTML = `
+                <div style="font-family: sans-serif; padding: 20px;">
+                    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 4px;">ASG SmartCalc Pro - Amortization Schedule</h2>
+                    <p style="font-size: 12px; color: #666; margin-bottom: 16px;">Generated on: ${new Date().toLocaleString()}</p>
+                    ${printContent}
+                </div>
+            `;
+            window.print();
+            document.body.innerHTML = originalContent;
+            window.location.reload();
+        }
+
+        function downloadSchedulePDF() {
+            const element = document.getElementById('schedule-table-printable');
+            if (typeof html2canvas !== 'undefined') {
+                html2canvas(element, { scale: 2 }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'amortization-schedule.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            } else {
+                window.print();
+            }
+        }
+    </script>
 
     <script type="module" src="./assets/js/app.js"></script>
 </body>
