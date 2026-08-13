@@ -254,6 +254,15 @@
                 </div>
             </div>
 
+            <!-- Calculation Standard Selector -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Calculation Standard</label>
+                <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-900/60 rounded-2xl">
+                    <button type="button" id="std-standard" onclick="setCalculationStandard('standard')" class="py-2.5 text-xs font-bold rounded-xl transition-all bg-white dark:bg-slate-800 text-purple-600 shadow-sm">Standard Monthly Compounding</button>
+                    <button type="button" id="std-alternative" onclick="setCalculationStandard('alternative')" class="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-600 dark:text-slate-400">Alternative Accrual Factor</button>
+                </div>
+            </div>
+
             <!-- Loan Category Selector -->
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Loan Category</label>
@@ -268,8 +277,8 @@
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Interest Type</label>
                 <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-900/60 rounded-2xl">
-                    <button type="button" id="int-fixed" onclick="setInterestType('fixed')" class="py-2.5 text-xs font-bold rounded-xl transition-all bg-white dark:bg-slate-800 text-purple-600 shadow-sm">Fixed Interest</button>
-                    <button type="button" id="int-variable" onclick="setInterestType('variable')" class="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-600 dark:text-slate-400">Variable (Reducing)</button>
+                    <button type="button" id="int-fixed" onclick="setInterestType('fixed')" class="py-2.5 text-xs font-bold rounded-xl transition-all text-slate-600 dark:text-slate-400">Fixed Interest</button>
+                    <button type="button" id="int-variable" onclick="setInterestType('variable')" class="py-2.5 text-xs font-bold rounded-xl transition-all bg-white dark:bg-slate-800 text-purple-600 shadow-sm">Variable (Reducing)</button>
                 </div>
             </div>
 
