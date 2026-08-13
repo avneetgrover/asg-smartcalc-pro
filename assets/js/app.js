@@ -7,13 +7,12 @@ const tabs = [
     { id: 'unit', name: 'Unit Converter', desc: 'Convert lengths, weights, and dimensions', icon: 'scale', init: initUnitConverter },
     { id: 'currency', name: 'Currency Exchange', desc: 'Live exchange conversion with swap toggle', icon: 'coins', init: initCurrencyCalculator },
     { id: 'emi', name: 'Loan EMI Calc', desc: 'Amortization, principal & interest breakdown', icon: 'landmark', init: initEmiCalculator },
-    
 ];
 
-// ... rest of app.js stays unchanged ...
-
 function initApp() {
-    document.getElementById('footerYear').textContent = new Date().getFullYear();
+    const footerYear = document.getElementById('footerYear');
+    if (footerYear) footerYear.textContent = new Date().getFullYear();
+    
     populateNavigation();
     
     tabs.forEach(tab => {
@@ -21,7 +20,9 @@ function initApp() {
     });
 
     switchTab('dashboard');
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+    }
     initThemeSwitcher();
 }
 
@@ -29,24 +30,30 @@ function populateNavigation() {
     const sidebar = document.getElementById('desktopSidebar');
     const mobileSelect = document.getElementById('mobileTabSelect');
     
-    sidebar.innerHTML = '';
-    mobileSelect.innerHTML = '';
+    if (sidebar) sidebar.innerHTML = '';
+    if (mobileSelect) mobileSelect.innerHTML = '';
 
     tabs.forEach(t => {
-        const btn = document.createElement('button');
-        btn.id = `nav-${t.id}`;
-        btn.onclick = () => switchTab(t.id);
-        btn.className = `w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-bold transition-all duration-200 text-left`;
-        btn.innerHTML = `<i data-lucide="${t.icon}" class="w-4 h-4"></i><span>${t.name}</span>`;
-        sidebar.appendChild(btn);
+        if (sidebar) {
+            const btn = document.createElement('button');
+            btn.id = `nav-${t.id}`;
+            btn.onclick = () => switchTab(t.id);
+            btn.className = `w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-bold transition-all duration-200 text-left`;
+            btn.innerHTML = `<i data-lucide="${t.icon}" class="w-4 h-4"></i><span>${t.name}</span>`;
+            sidebar.appendChild(btn);
+        }
 
-        const opt = document.createElement('option');
-        opt.value = t.id;
-        opt.textContent = t.name;
-        mobileSelect.appendChild(opt);
+        if (mobileSelect) {
+            const opt = document.createElement('option');
+            opt.value = t.id;
+            opt.textContent = t.name;
+            mobileSelect.appendChild(opt);
+        }
     });
 
-    mobileSelect.addEventListener('change', (e) => switchTab(e.target.value));
+    if (mobileSelect) {
+        mobileSelect.addEventListener('change', (e) => switchTab(e.target.value));
+    }
 }
 
 window.switchTab = function(tabId) {
@@ -88,6 +95,7 @@ window.switchTab = function(tabId) {
         }
     }
 };
+
 function initThemeSwitcher() {
     const themeKey = 'asg_theme';
     const selects = [
@@ -118,6 +126,7 @@ function initThemeSwitcher() {
         }
     });
 }
+
 window.shareCalculation = async function(type) {
     // Dynamically resolve the correct receipt element ID based on module type
     const sectionId = type === 'emi' ? 'print-section' : `print-section-${type}`;
@@ -161,4 +170,5 @@ window.shareCalculation = async function(type) {
         console.error("Error generating receipt image:", error);
     }
 };
+
 window.addEventListener('DOMContentLoaded', initApp);
