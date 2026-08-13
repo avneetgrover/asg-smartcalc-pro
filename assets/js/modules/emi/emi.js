@@ -1,5 +1,4 @@
 let currentCategory = 'home';
-let currentInterestType = 'variable';
 let currentFrequency = 'monthly';
 let currentCurrency = '$';
 
@@ -38,21 +37,6 @@ window.setLoanCategory = function(cat) {
         if (cat === 'car') rateInput.value = 9.2;
         if (cat === 'other') rateInput.value = 11.5;
     }
-    calculateEmi();
-};
-
-window.setInterestType = function(type) {
-    currentInterestType = type;
-    ['fixed', 'variable'].forEach(t => {
-        const btn = document.getElementById(`int-${t}`);
-        if (btn) {
-            if (t === type) {
-                btn.className = 'py-2.5 text-xs font-bold rounded-xl transition-all bg-white dark:bg-slate-800 text-purple-600 shadow-sm';
-            } else {
-                btn.className = 'py-2.5 text-xs font-bold rounded-xl transition-all text-slate-600 dark:text-slate-400';
-            }
-        }
-    });
     calculateEmi();
 };
 
@@ -118,49 +102,28 @@ function calculateEmi() {
     let scheduleHtml = '';
     let balance = p;
 
-    if (currentInterestType === 'fixed') {
-        totalInterest = (p * annualRate * years) / 100;
-        totalPayable = p + totalInterest;
-        periodicPayment = totalPeriods > 0 ? totalPayable / totalPeriods : 0;
-        
-        let periodicPrincipal = totalPeriods > 0 ? p / totalPeriods : 0;
-        let periodicInt = totalPeriods > 0 ? totalInterest / totalPeriods : 0;
-
-        for (let i = 1; i <= Math.min(totalPeriods, 150); i++) {
-            balance -= periodicPrincipal;
-            scheduleHtml += `
-                <tr>
-                    <td class="p-2 font-bold">${periodName} ${i}</td>
-                    <td class="p-2">${currentCurrency}${periodicPrincipal.toFixed(2)}</td>
-                    <td class="p-2">${currentCurrency}${periodicInt.toFixed(2)}</td>
-                    <td class="p-2">${currentCurrency}${Math.max(0, balance).toFixed(2)}</td>
-                </tr>
-            `;
-        }
+    if (periodicRate > 0 && totalPeriods > 0) {
+        periodicPayment = (p * periodicRate * Math.pow(1 + periodicRate, totalPeriods)) / (Math.pow(1 + periodicRate, totalPeriods) - 1);
+        totalPayable = periodicPayment * totalPeriods;
+        totalInterest = totalPayable - p;
     } else {
-        if (periodicRate > 0 && totalPeriods > 0) {
-            periodicPayment = (p * periodicRate * Math.pow(1 + periodicRate, totalPeriods)) / (Math.pow(1 + periodicRate, totalPeriods) - 1);
-            totalPayable = periodicPayment * totalPeriods;
-            totalInterest = totalPayable - p;
-        } else {
-            periodicPayment = totalPeriods > 0 ? p / totalPeriods : 0;
-            totalPayable = p;
-        }
+        periodicPayment = totalPeriods > 0 ? p / totalPeriods : 0;
+        totalPayable = p;
+    }
 
-        for (let i = 1; i <= Math.min(totalPeriods, 150); i++) {
-            let interestComponent = balance * periodicRate;
-            let principalComponent = periodicPayment - interestComponent;
-            balance -= principalComponent;
+    for (let i = 1; i <= Math.min(totalPeriods, 150); i++) {
+        let interestComponent = balance * periodicRate;
+        let principalComponent = periodicPayment - interestComponent;
+        balance -= principalComponent;
 
-            scheduleHtml += `
-                <tr>
-                    <td class="p-2 font-bold">${periodName} ${i}</td>
-                    <td class="p-2">${currentCurrency}${Math.max(0, principalComponent).toFixed(2)}</td>
-                    <td class="p-2">${currentCurrency}${Math.max(0, interestComponent).toFixed(2)}</td>
-                    <td class="p-2">${currentCurrency}${Math.max(0, balance).toFixed(2)}</td>
-                </tr>
-            `;
-        }
+        scheduleHtml += `
+            <tr>
+                <td class="p-2 font-bold">${periodName} ${i}</td>
+                <td class="p-2">${currentCurrency}${Math.max(0, principalComponent).toFixed(2)}</td>
+                <td class="p-2">${currentCurrency}${Math.max(0, interestComponent).toFixed(2)}</td>
+                <td class="p-2">${currentCurrency}${Math.max(0, balance).toFixed(2)}</td>
+            </tr>
+        `;
     }
 
     const emiEl = document.getElementById('emiOutput');
