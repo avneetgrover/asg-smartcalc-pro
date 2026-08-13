@@ -1,6 +1,6 @@
 let currentCategory = 'home';
 let currentInterestType = 'variable';
-let currentStandard = 'standard';
+let currentFrequency = 'monthly';
 let currentCurrency = '$';
 
 export function initEmiCalculator() {
@@ -56,12 +56,12 @@ window.setInterestType = function(type) {
     calculateEmi();
 };
 
-window.setCalculationStandard = function(standard) {
-    currentStandard = standard;
-    ['standard', 'alternative'].forEach(s => {
-        const btn = document.getElementById(`std-${s}`);
+window.setPaymentFrequency = function(freq) {
+    currentFrequency = freq;
+    ['monthly', 'biweekly', 'weekly'].forEach(f => {
+        const btn = document.getElementById(`freq-${f}`);
         if (btn) {
-            if (s === standard) {
+            if (f === freq) {
                 btn.className = 'py-2.5 text-xs font-bold rounded-xl transition-all bg-white dark:bg-slate-800 text-purple-600 shadow-sm';
             } else {
                 btn.className = 'py-2.5 text-xs font-bold rounded-xl transition-all text-slate-600 dark:text-slate-400';
@@ -98,10 +98,21 @@ function calculateEmi() {
     const p = parseFloat(document.getElementById('emiAmount')?.value) || 0;
     const annualRate = parseFloat(document.getElementById('emiRate')?.value) || 0;
     const years = parseFloat(document.getElementById('emiTenure')?.value) || 0;
-    const months = years * 12;
     
-    let monthlyRate = annualRate / 12 / 100;
-    let emi = 0;
+    let periodsPerYear = 12;
+    let periodName = 'Month';
+    if (currentFrequency === 'biweekly') {
+        periodsPerYear = 26;
+        periodName = 'Bi-Week';
+    } else if (currentFrequency === 'weekly') {
+        periodsPerYear = 52;
+        periodName = 'Week';
+    }
+
+    const totalPeriods = years * periodsPerYear;
+    let periodicRate = (annualRate / 100) / periodsPerYear;
+    
+    let periodicPayment = 0;
     let totalPayable = 0;
     let totalInterest = 0;
     let scheduleHtml = '';
@@ -110,47 +121,40 @@ function calculateEmi() {
     if (currentInterestType === 'fixed') {
         totalInterest = (p * annualRate * years) / 100;
         totalPayable = p + totalInterest;
-        emi = months > 0 ? totalPayable / months : 0;
+        periodicPayment = totalPeriods > 0 ? totalPayable / totalPeriods : 0;
         
-        let monthlyPrincipal = months > 0 ? p / months : 0;
-        let monthlyInt = months > 0 ? totalInterest / months : 0;
+        let periodicPrincipal = totalPeriods > 0 ? p / totalPeriods : 0;
+        let periodicInt = totalPeriods > 0 ? totalInterest / totalPeriods : 0;
 
-        for (let i = 1; i <= Math.min(months, 360); i++) {
-            balance -= monthlyPrincipal;
+        for (let i = 1; i <= Math.min(totalPeriods, 150); i++) {
+            balance -= periodicPrincipal;
             scheduleHtml += `
                 <tr>
-                    <td class="p-2 font-bold">Month ${i}</td>
-                    <td class="p-2">${currentCurrency}${monthlyPrincipal.toFixed(2)}</td>
-                    <td class="p-2">${currentCurrency}${monthlyInt.toFixed(2)}</td>
+                    <td class="p-2 font-bold">${periodName} ${i}</td>
+                    <td class="p-2">${currentCurrency}${periodicPrincipal.toFixed(2)}</td>
+                    <td class="p-2">${currentCurrency}${periodicInt.toFixed(2)}</td>
                     <td class="p-2">${currentCurrency}${Math.max(0, balance).toFixed(2)}</td>
                 </tr>
             `;
         }
     } else {
-        if (monthlyRate > 0 && months > 0) {
-            // Standard Amortization Formula
-            emi = (p * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
-            
-            // If alternative regional day-count convention is chosen (e.g. 360-day adjustment factor)
-            if (currentStandard === 'alternative') {
-                emi = emi * (365 / 360); 
-            }
-
-            totalPayable = emi * months;
+        if (periodicRate > 0 && totalPeriods > 0) {
+            periodicPayment = (p * periodicRate * Math.pow(1 + periodicRate, totalPeriods)) / (Math.pow(1 + periodicRate, totalPeriods) - 1);
+            totalPayable = periodicPayment * totalPeriods;
             totalInterest = totalPayable - p;
         } else {
-            emi = months > 0 ? p / months : 0;
+            periodicPayment = totalPeriods > 0 ? p / totalPeriods : 0;
             totalPayable = p;
         }
 
-        for (let i = 1; i <= Math.min(months, 360); i++) {
-            let interestComponent = balance * monthlyRate;
-            let principalComponent = emi - interestComponent;
+        for (let i = 1; i <= Math.min(totalPeriods, 150); i++) {
+            let interestComponent = balance * periodicRate;
+            let principalComponent = periodicPayment - interestComponent;
             balance -= principalComponent;
 
             scheduleHtml += `
                 <tr>
-                    <td class="p-2 font-bold">Month ${i}</td>
+                    <td class="p-2 font-bold">${periodName} ${i}</td>
                     <td class="p-2">${currentCurrency}${Math.max(0, principalComponent).toFixed(2)}</td>
                     <td class="p-2">${currentCurrency}${Math.max(0, interestComponent).toFixed(2)}</td>
                     <td class="p-2">${currentCurrency}${Math.max(0, balance).toFixed(2)}</td>
@@ -160,12 +164,14 @@ function calculateEmi() {
     }
 
     const emiEl = document.getElementById('emiOutput');
+    const emiLabel = document.getElementById('emiLabelText');
     const princEl = document.getElementById('emiPrincipalText');
     const intEl = document.getElementById('emiInterestText');
     const totEl = document.getElementById('emiTotalText');
     const tbody = document.getElementById('schedule-table-body');
 
-    if (emiEl) emiEl.textContent = `${currentCurrency}${Math.round(emi).toLocaleString()}`;
+    if (emiEl) emiEl.textContent = `${currentCurrency}${Math.round(periodicPayment).toLocaleString()}`;
+    if (emiLabel) emiLabel.textContent = `${currentFrequency.toUpperCase()} PAYMENT`;
     if (princEl) princEl.textContent = `${currentCurrency}${Math.round(p).toLocaleString()}`;
     if (intEl) intEl.textContent = `${currentCurrency}${Math.round(totalInterest).toLocaleString()}`;
     if (totEl) totEl.textContent = `${currentCurrency}${Math.round(totalPayable).toLocaleString()}`;
