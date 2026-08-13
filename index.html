@@ -188,12 +188,27 @@
 
         </div>
 
-        <!-- FULL CONVERSION BREAKDOWN (Right Side) -->
-        <div class="md:col-span-5 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-slate-800 dark:to-purple-950/40 p-6 md:p-8 rounded-3xl border border-purple-100 dark:border-purple-900/50 flex flex-col justify-center space-y-4">
-            <div class="text-xs font-extrabold text-purple-600 dark:text-purple-400 tracking-wider uppercase">Full Conversion Breakdown</div>
-            <div id="unitResults" class="text-sm font-semibold space-y-2.5 text-slate-800 dark:text-slate-200"></div>
+        <!-- Unit Converter POS Receipt Summary -->
+<div id="print-section-unit" class="md:col-span-5 bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between font-mono relative overflow-hidden">
+    <div>
+        <div class="text-center pb-4 mb-4 border-b border-dashed border-slate-200 dark:border-slate-800">
+            <h3 class="text-xs font-bold tracking-widest text-slate-900 dark:text-white uppercase">ASG SMARTCALC PRO</h3>
+            <p class="text-[10px] tracking-wider text-slate-400 mt-1 uppercase">Unit Conversion Receipt</p>
+            <p class="text-[9px] text-slate-400 mt-0.5" id="receipt-date-unit"></p>
         </div>
 
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Conversion Breakdown</div>
+        <div id="unitResults" class="text-xs font-semibold space-y-2.5 text-slate-800 dark:text-slate-200 mb-6"></div>
+    </div>
+
+    <!-- Action Toolbar -->
+    <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 font-sans">
+        <button type="button" onclick="window.print()" class="flex-1 py-2.5 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
+            Print Receipt
+        </button>
+        <button type="button" onclick="shareCalculation('unit')" class="flex-1 py-2.5 px-3 bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 text-purple-600 dark:text-purple-300 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
+            Share Receipt
+        </button>
     </div>
 </div>
 
@@ -227,11 +242,32 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-800 dark:to-emerald-950/40 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-900/50 flex flex-col justify-center items-center text-center">
-                                <div class="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">Live Converted Value</div>
-                                <div id="currOutput" class="text-3xl font-black text-emerald-600 dark:text-emerald-400 font-mono">--</div>
-                                <div id="currStatus" class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-2">Fetching live rates...</div>
-                            </div>
+                            <!-- Currency Exchange POS Receipt Summary -->
+<div id="print-section-currency" class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between font-mono relative overflow-hidden">
+    <div>
+        <div class="text-center pb-4 mb-4 border-b border-dashed border-slate-200 dark:border-slate-800">
+            <h3 class="text-xs font-bold tracking-widest text-slate-900 dark:text-white uppercase">ASG SMARTCALC PRO</h3>
+            <p class="text-[10px] tracking-wider text-slate-400 mt-1 uppercase">Foreign Exchange Receipt</p>
+            <p class="text-[9px] text-slate-400 mt-0.5" id="receipt-date-currency"></p>
+        </div>
+
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Exchange Breakdown</div>
+        <div id="currResults" class="text-xs font-semibold space-y-3 text-slate-800 dark:text-slate-200 mb-6">
+            <div class="flex justify-between"><span>Converted Value:</span> <span id="currOutput" class="font-bold text-emerald-600 dark:text-emerald-400">--</span></div>
+            <div id="currStatus" class="text-[10px] text-slate-400">Fetching live rates...</div>
+        </div>
+    </div>
+
+    <!-- Action Toolbar -->
+    <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 font-sans">
+        <button type="button" onclick="window.print()" class="flex-1 py-2.5 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
+            Print Receipt
+        </button>
+        <button type="button" onclick="shareCalculation('currency')" class="flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-300 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
+            Share Receipt
+        </button>
+    </div>
+</div>
                         </div>
                     </div>
 
