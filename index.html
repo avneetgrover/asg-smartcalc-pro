@@ -243,33 +243,37 @@
                                 </div>
                             </div>
                             <!-- Currency Exchange POS Receipt Summary -->
-<div id="print-section-currency" class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between font-mono relative overflow-hidden">
-    <div>
-        <div class="text-center pb-4 mb-4 border-b border-dashed border-slate-200 dark:border-slate-800">
-            <h3 class="text-xs font-bold tracking-widest text-slate-900 dark:text-white uppercase">ASG SMARTCALC PRO</h3>
-            <p class="text-[10px] tracking-wider text-slate-400 mt-1 uppercase">Foreign Exchange Receipt</p>
-            <p class="text-[9px] text-slate-400 mt-0.5" id="receipt-date-currency"></p>
+    <div id="print-section-currency" class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between font-mono relative overflow-hidden">
+        <div>
+            <div class="text-center pb-4 mb-4 border-b border-dashed border-slate-200 dark:border-slate-800">
+                <h3 class="text-xs font-bold tracking-widest text-slate-900 dark:text-white uppercase">ASG SMARTCALC PRO</h3>
+                <p class="text-[10px] tracking-wider text-slate-400 mt-1 uppercase">Foreign Exchange Receipt</p>
+                <p class="text-[9px] text-slate-400 mt-0.5" id="receipt-date-currency"></p>
+            </div>
+
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Exchange Breakdown</div>
+            
+            <!-- Converted Value Output -->
+            <div class="mb-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl text-center border border-slate-100 dark:border-slate-800">
+                <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider block">CONVERTED VALUE</span>
+                <div id="currOutput" class="text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1">--</div>
+                <div id="currStatus" class="text-[10px] text-slate-400 mt-1">Fetching live rates...</div>
+            </div>
+
+            <!-- Dynamic List Container -->
+            <div id="currResults" class="text-xs font-semibold space-y-2 text-slate-800 dark:text-slate-200 mb-6"></div>
         </div>
 
-        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Exchange Breakdown</div>
-        <div id="currResults" class="text-xs font-semibold space-y-3 text-slate-800 dark:text-slate-200 mb-6">
-            <div class="flex justify-between"><span>Converted Value:</span> <span id="currOutput" class="font-bold text-emerald-600 dark:text-emerald-400">--</span></div>
-            <div id="currStatus" class="text-[10px] text-slate-400">Fetching live rates...</div>
+        <!-- Action Toolbar -->
+        <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 font-sans">
+            <button type="button" onclick="window.print()" class="flex-1 py-2.5 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
+                Print Receipt
+            </button>
+            <button type="button" onclick="shareCalculation('currency')" class="flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-300 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
+                Share Receipt
+            </button>
         </div>
     </div>
-
-    <!-- Action Toolbar -->
-    <div class="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 font-sans">
-        <button type="button" onclick="window.print()" class="flex-1 py-2.5 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
-            Print Receipt
-        </button>
-        <button type="button" onclick="shareCalculation('currency')" class="flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-600 dark:text-emerald-300 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5">
-            Share Receipt
-        </button>
-    </div>
-</div>
-                        </div>
-                    </div>
 
                    <!-- LOAN EMI CALCULATOR PANEL -->
 <div id="panel-emi" class="calc-panel hidden">
