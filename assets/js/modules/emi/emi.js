@@ -7,7 +7,7 @@ export function initEmiCalculator() {
     const amountInput = document.getElementById('emiAmount');
     const rateInput = document.getElementById('emiRate');
     const tenureInput = document.getElementById('emiTenure');
-
+    
     if (!amountInput) return;
 
     [amountInput, rateInput, tenureInput].forEach(input => {
@@ -15,6 +15,13 @@ export function initEmiCalculator() {
             input.addEventListener('input', calculateEmi);
         }
     });
+
+    // Set automatic timestamp on receipt if available
+    const dateEl = document.getElementById('receipt-date');
+    if (dateEl) {
+        const now = new Date();
+        dateEl.textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' • ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
 
     calculateEmi();
 }
@@ -72,7 +79,6 @@ window.setEmiCurrency = function(symbol) {
     calculateEmi();
 };
 
-// Fixed: Attached explicitly to window so onclick="setTenureUnit(...)" works
 window.setTenureUnit = function(unit) {
     currentTenureUnit = unit;
     const btnYears = document.getElementById('tenure-unit-years');
@@ -98,11 +104,9 @@ window.resetEmiCalculator = function() {
     const amountInput = document.getElementById('emiAmount');
     const rateInput = document.getElementById('emiRate');
     const tenureInput = document.getElementById('emiTenure');
-
     if (amountInput) amountInput.value = '100000';
     if (rateInput) rateInput.value = '12';
     if (tenureInput) tenureInput.value = '5';
-    
     currentTenureUnit = 'years';
     window.setTenureUnit('years');
     calculateEmi();
@@ -121,9 +125,9 @@ function calculateEmi() {
     const rawTenure = parseFloat(document.getElementById('emiTenure')?.value) || 0;
     
     const totalYears = currentTenureUnit === 'months' ? rawTenure / 12 : rawTenure;
-
     let periodsPerYear = 12;
     let periodName = 'Month';
+
     if (currentFrequency === 'biweekly') {
         periodsPerYear = 26;
         periodName = 'Bi-Week';
@@ -134,7 +138,6 @@ function calculateEmi() {
 
     const totalPeriods = totalYears * periodsPerYear;
     let periodicRate = (annualRate / 100) / periodsPerYear;
-    
     let periodicPayment = 0;
     let totalPayable = 0;
     let totalInterest = 0;
@@ -154,7 +157,6 @@ function calculateEmi() {
         let interestComponent = balance * periodicRate;
         let principalComponent = periodicPayment - interestComponent;
         balance -= principalComponent;
-
         scheduleHtml += `
             <tr>
                 <td class="p-2 font-bold">${periodName} ${i}</td>
@@ -178,31 +180,6 @@ function calculateEmi() {
     if (intEl) intEl.textContent = `${currentCurrency}${Math.round(totalInterest).toLocaleString()}`;
     if (totEl) totEl.textContent = `${currentCurrency}${Math.round(totalPayable).toLocaleString()}`;
     if (tbody) tbody.innerHTML = scheduleHtml;
-
-    window.shareCalculation = function(type) {
-    let textToShare = '';
-    
-    if (type === 'emi') {
-        const payment = document.getElementById('emiOutput')?.textContent || '';
-        const label = document.getElementById('emiLabelText')?.textContent || 'PAYMENT';
-        const principal = document.getElementById('emiPrincipalText')?.textContent || '';
-        const interest = document.getElementById('emiInterestText')?.textContent || '';
-        const total = document.getElementById('emiTotalText')?.textContent || '';
-        
-        textToShare = `ASG SmartCalc Pro - Loan EMI Breakdown:\n- ${label}: ${payment}\n- Principal: ${principal}\n- Total Interest: ${interest}\n- Total Payable: ${total}`;
-    }
-
-    if (navigator.share) {
-        navigator.share({
-            title: 'Calculation Result',
-            text: textToShare
-        }).catch(() => {});
-    } else {
-        navigator.clipboard.writeText(textToShare).then(() => {
-            alert('Calculation breakdown copied to clipboard!');
-        });
-    }
-};
 }
 
 window.shareCalculation = async function(type) {
@@ -210,12 +187,12 @@ window.shareCalculation = async function(type) {
     if (!printSection) return;
 
     try {
-        // Hide the buttons temporarily so they don't appear in the captured image
-        const buttonsToolbar = printSection.querySelector('.border-t.mt-8');
+        // Temporarily hide action buttons from receipt capture
+        const buttonsToolbar = printSection.querySelector('.font-sans');
         if (buttonsToolbar) buttonsToolbar.style.display = 'none';
 
         const canvas = await html2canvas(printSection, {
-            scale: 2, // Crisp high resolution
+            scale: 2, // High resolution capture
             useCORS: true,
             backgroundColor: null
         });
@@ -223,13 +200,13 @@ window.shareCalculation = async function(type) {
         if (buttonsToolbar) buttonsToolbar.style.display = 'flex';
 
         canvas.toBlob(async (blob) => {
-            const file = new File([blob], 'loan-summary.png', { type: 'image/png' });
+            const file = new File([blob], 'receipt-summary.png', { type: 'image/png' });
             
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({
-                        title: 'Loan EMI Summary',
-                        text: 'Here is my calculation breakdown from ASG SmartCalc Pro',
+                        title: 'Transaction Receipt',
+                        text: 'Here is my transaction receipt from ASG SmartCalc Pro',
                         files: [file]
                     });
                 } catch (err) {
@@ -240,7 +217,7 @@ window.shareCalculation = async function(type) {
             }
         }, 'image/png');
     } catch (error) {
-        console.error('Error capturing summary:', error);
+        console.error('Error capturing receipt image:', error);
     }
 };
 
@@ -248,57 +225,7 @@ function triggerDownload(blob) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'loan-summary.png';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-window.shareCalculation = async function(type) {
-    const printSection = document.getElementById('print-section');
-    if (!printSection) return;
-
-    try {
-        // Temporarily hide the buttons from the captured snapshot
-        const buttonsToolbar = printSection.querySelector('.border-t.mt-8, .mt-8.pt-4');
-        if (buttonsToolbar) buttonsToolbar.style.display = 'none';
-
-        const canvas = await html2canvas(printSection, {
-            scale: 2, // High resolution crisp image
-            useCORS: true,
-            backgroundColor: null
-        });
-
-        if (buttonsToolbar) buttonsToolbar.style.display = 'flex';
-
-        canvas.toBlob(async (blob) => {
-            const file = new File([blob], 'loan-summary.png', { type: 'image/png' });
-            
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        title: 'Loan EMI Summary',
-                        text: 'Here is my calculation breakdown from ASG SmartCalc Pro',
-                        files: [file]
-                    });
-                } catch (err) {
-                    if (err.name !== 'AbortError') triggerDownload(blob);
-                }
-            } else {
-                triggerDownload(blob);
-            }
-        }, 'image/png');
-    } catch (error) {
-        console.error('Error capturing summary image:', error);
-    }
-};
-
-function triggerDownload(blob) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'loan-summary.png';
+    a.download = 'receipt-summary.png';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
