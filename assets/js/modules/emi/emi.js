@@ -1,6 +1,7 @@
 let currentCategory = 'home';
 let currentFrequency = 'monthly';
 let currentCurrency = '$';
+let currentTenureUnit = 'years';
 
 export function initEmiCalculator() {
     const amountInput = document.getElementById('emiAmount');
@@ -71,6 +72,27 @@ window.setEmiCurrency = function(symbol) {
     calculateEmi();
 };
 
+window.setTenureUnit = function(unit) {
+    currentTenureUnit = unit;
+    const btnYears = document.getElementById('tenure-unit-years');
+    const btnMonths = document.getElementById('tenure-unit-months');
+    const label = document.getElementById('tenure-label-text');
+    const tenureInput = document.getElementById('emiTenure');
+
+    if (unit === 'years') {
+        if (btnYears) btnYears.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all bg-white dark:bg-slate-800 text-purple-600 shadow-sm';
+        if (btnMonths) btnMonths.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all text-slate-500 dark:text-slate-400';
+        if (label) label.textContent = 'TENURE (YEARS)';
+        if (tenureInput && tenureInput.value > 60) tenureInput.value = Math.round(tenureInput.value / 12);
+    } else {
+        if (btnMonths) btnMonths.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all bg-white dark:bg-slate-800 text-purple-600 shadow-sm';
+        if (btnYears) btnYears.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all text-slate-500 dark:text-slate-400';
+        if (label) label.textContent = 'TENURE (MONTHS)';
+        if (tenureInput && tenureInput.value <= 40) tenureInput.value = tenureInput.value * 12;
+    }
+    calculateEmi();
+};
+
 window.resetEmiCalculator = function() {
     const amountInput = document.getElementById('emiAmount');
     const rateInput = document.getElementById('emiRate');
@@ -93,8 +115,11 @@ window.toggleScheduleModal = function() {
 function calculateEmi() {
     const p = parseFloat(document.getElementById('emiAmount')?.value) || 0;
     const annualRate = parseFloat(document.getElementById('emiRate')?.value) || 0;
-    const years = parseFloat(document.getElementById('emiTenure')?.value) || 0;
+    const rawTenure = parseFloat(document.getElementById('emiTenure')?.value) || 0;
     
+    // Convert tenure to total years based on selected unit
+    const totalYears = currentTenureUnit === 'months' ? rawTenure / 12 : rawTenure;
+
     let periodsPerYear = 12;
     let periodName = 'Month';
     if (currentFrequency === 'biweekly') {
@@ -105,7 +130,7 @@ function calculateEmi() {
         periodName = 'Week';
     }
 
-    const totalPeriods = years * periodsPerYear;
+    const totalPeriods = totalYears * periodsPerYear;
     let periodicRate = (annualRate / 100) / periodsPerYear;
     
     let periodicPayment = 0;
