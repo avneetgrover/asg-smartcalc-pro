@@ -128,7 +128,6 @@ function initThemeSwitcher() {
 }
 
 window.shareCalculation = async function(type) {
-    // Dynamically resolve the correct receipt element ID based on module type
     const sectionId = type === 'emi' ? 'print-section' : `print-section-${type}`;
     const element = document.getElementById(sectionId);
 
@@ -138,17 +137,15 @@ window.shareCalculation = async function(type) {
     }
 
     try {
-        // Generate canvas with an explicit background color to prevent transparent/blank PNGs
         const canvas = await html2canvas(element, {
             backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff',
-            scale: 2, // High resolution crisp export
+            scale: 2,
             useCORS: true
         });
 
         canvas.toBlob(async (blob) => {
             const file = new File([blob], `asg-smartcalc-${type}-receipt.png`, { type: 'image/png' });
             
-            // Use Web Share API if supported, otherwise fallback to direct download
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({
