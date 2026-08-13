@@ -129,10 +129,9 @@
                         </div>
                     </div>
 
-                    <!-- UNIT CONVERTER PANEL (Google Style + Breakdown) -->
+                    <!-- UNIT CONVERTER PANEL -->
                     <div id="panel-unit" class="calc-panel hidden">
                         <div class="grid md:grid-cols-12 gap-6 items-start">
-                            <!-- MAIN INTERACTIVE CONVERTER (Left Side) -->
                             <div class="md:col-span-7 bg-white dark:bg-slate-800/80 p-5 md:p-6 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-4">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Category</label>
@@ -176,7 +175,6 @@
                                 </div>
                             </div>
 
-                            <!-- Unit Converter POS Receipt Summary -->
                             <div id="print-section-unit" class="md:col-span-5 bg-white dark:bg-slate-900 p-5 md:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between font-mono relative overflow-hidden">
                                 <div>
                                     <div class="text-center pb-3 mb-3 border-b border-dashed border-slate-200 dark:border-slate-800">
@@ -204,7 +202,6 @@
                     <!-- CURRENCY EXCHANGE PANEL -->
                     <div id="panel-currency" class="calc-panel hidden">
                         <div class="grid md:grid-cols-12 gap-6 items-start">
-                            <!-- Left Interactive Controls -->
                             <div class="md:col-span-7 bg-white dark:bg-slate-800/80 p-5 md:p-6 rounded-3xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-4">
                                 <div>
                                     <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Amount</label>
@@ -233,7 +230,6 @@
                                 </div>
                             </div>
 
-                            <!-- Right POS Receipt Summary -->
                             <div id="print-section-currency" class="md:col-span-5 bg-white dark:bg-slate-900 p-5 md:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between font-mono relative overflow-hidden">
                                 <div>
                                     <div class="text-center pb-3 mb-3 border-b border-dashed border-slate-200 dark:border-slate-800">
@@ -305,15 +301,15 @@
                                     </div>
                                 </div>
 
-                                <!-- Input Fields -->
+                                <!-- Input Fields (Defaulted to 0) -->
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div>
                                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Loan Amount</label>
-                                        <input type="number" id="emiAmount" value="100000" class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <input type="number" id="emiAmount" value="0" class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
                                     </div>
                                     <div>
                                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Interest Rate (% p.a.)</label>
-                                        <input type="number" step="0.1" id="emiRate" value="12" class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <input type="number" step="0.1" id="emiRate" value="0" class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
                                     </div>
                                     <div>
                                         <div class="flex justify-between items-center mb-1">
@@ -323,16 +319,21 @@
                                                 <button type="button" id="tenure-unit-months" onclick="setTenureUnit('months')" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-all text-slate-500 dark:text-slate-400">Mos</button>
                                             </div>
                                         </div>
-                                        <input type="number" id="emiTenure" value="5" class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                        <input type="number" id="emiTenure" value="0" class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-3 py-2 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
                                     </div>
                                 </div>
 
-                                <!-- Action Buttons: Reset & Schedule -->
+                                <!-- Action Buttons: Calculate, Reset, and View Schedule Table -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                                    <button type="button" onclick="calculateEmi()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs uppercase tracking-wider rounded-2xl transition-all shadow-sm">
+                                        Calculate EMI
+                                    </button>
                                     <button type="button" onclick="resetEmiCalculator()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-900/80 hover:bg-slate-200 text-slate-600 dark:text-slate-300 font-bold text-xs uppercase tracking-wider rounded-2xl transition-all">
                                         Reset to Default
                                     </button>
-                                    <button type="button" onclick="toggleScheduleModal()" class="w-full py-2.5 bg-purple-100 dark:bg-purple-950/50 hover:bg-purple-200 text-purple-700 dark:text-purple-300 font-bold text-xs uppercase tracking-wider rounded-2xl transition-all">
+                                </div>
+                                <div class="pt-1">
+                                    <button type="button" onclick="toggleScheduleModal()" class="w-full py-2.5 bg-slate-100 dark:bg-slate-900/80 hover:bg-slate-200 text-purple-700 dark:text-purple-300 font-bold text-xs uppercase tracking-wider rounded-2xl transition-all border border-purple-200 dark:border-purple-900/40">
                                         View Schedule Table
                                     </button>
                                 </div>
@@ -361,31 +362,31 @@
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-slate-400">Interest Rate:</span>
-                                            <span id="receiptRate" class="font-bold text-slate-700 dark:text-slate-300">12% p.a.</span>
+                                            <span id="receiptRate" class="font-bold text-slate-700 dark:text-slate-300">0% p.a.</span>
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-slate-400">Tenure:</span>
-                                            <span id="receiptTenure" class="font-bold text-slate-700 dark:text-slate-300">5 Years</span>
+                                            <span id="receiptTenure" class="font-bold text-slate-700 dark:text-slate-300">0 Years</span>
                                         </div>
                                     </div>
 
                                     <div class="mb-3 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl text-center border border-slate-100 dark:border-slate-800">
                                         <span id="emiLabelText" class="text-[10px] font-medium text-slate-400 uppercase tracking-wider block">MONTHLY PAYMENT</span>
-                                        <div id="emiOutput" class="text-2xl font-black text-purple-600 dark:text-purple-400 mt-0.5">$2,255</div>
+                                        <div id="emiOutput" class="text-2xl font-black text-purple-600 dark:text-purple-400 mt-0.5">$0</div>
                                     </div>
 
                                     <div class="space-y-2 border-t border-dashed border-slate-200 dark:border-slate-800 pt-2.5 text-xs">
                                         <div class="flex justify-between font-bold">
                                             <span class="text-slate-400">Principal Loan</span>
-                                            <span id="emiPrincipalText" class="text-slate-800 dark:text-white">$100,000</span>
+                                            <span id="emiPrincipalText" class="text-slate-800 dark:text-white">$0</span>
                                         </div>
                                         <div class="flex justify-between font-bold">
                                             <span class="text-slate-400">Total Interest</span>
-                                            <span id="emiInterestText" class="text-purple-600">$35,320</span>
+                                            <span id="emiInterestText" class="text-purple-600">$0</span>
                                         </div>
                                         <div class="flex justify-between font-bold border-t border-dashed border-slate-200 dark:border-slate-800 pt-2 text-xs">
                                             <span class="text-slate-500">TOTAL PAYABLE</span>
-                                            <span id="emiTotalText" class="text-slate-900 dark:text-white">$135,320</span>
+                                            <span id="emiTotalText" class="text-slate-900 dark:text-white">$0</span>
                                         </div>
                                     </div>
 
