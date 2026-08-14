@@ -93,6 +93,7 @@
                 </div>
 
                 <div id="calculatorPanels" class="flex-1 overflow-y-auto pr-1">
+                    
                     <!-- DASHBOARD / MODULE SELECTOR PANEL -->
                     <div id="panel-dashboard" class="calc-panel space-y-6">
                         <div class="text-center py-4">
@@ -127,35 +128,35 @@
                                 <h4 class="font-bold text-slate-900 dark:text-white text-base">Loan EMI Calc</h4>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Estimate monthly EMI repayments and total interest payable.</p>
                             </button>
+
+                            <!-- Investment & SIP Card -->
+                            <button onclick="switchTab('investment')" class="p-6 bg-white dark:bg-slate-800/80 hover:bg-purple-50/50 dark:hover:bg-purple-950/30 border border-slate-200/80 dark:border-slate-700/80 rounded-3xl text-left transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 group">
+                                <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="trending-up" class="w-6 h-6"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-base">Investment & SIP</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Compound interest, SIP projections, and returns.</p>
+                            </button>
+
+                            <!-- Tax Calculator Card -->
+                            <button onclick="switchTab('tax')" class="p-6 bg-white dark:bg-slate-800/80 hover:bg-purple-50/50 dark:hover:bg-purple-950/30 border border-slate-200/80 dark:border-slate-700/80 rounded-3xl text-left transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 group">
+                                <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="receipt" class="w-6 h-6"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-base">Tax Calculator</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">GST, HST, and combined sales tax breakdown.</p>
+                            </button>
+
+                            <!-- Tip & Split Bill Card -->
+                            <button onclick="switchTab('tip')" class="p-6 bg-white dark:bg-slate-800/80 hover:bg-purple-50/50 dark:hover:bg-purple-950/30 border border-slate-200/80 dark:border-slate-700/80 rounded-3xl text-left transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 group">
+                                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="users" class="w-6 h-6"></i>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-base">Tip & Split Bill</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Calculate tips and divide bills easily.</p>
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Investment & SIP Card -->
-<button onclick="switchTab('investment')" class="p-6 bg-white dark:bg-slate-800/80 hover:bg-purple-50/50 dark:hover:bg-purple-950/30 border border-slate-200/80 dark:border-slate-700/80 rounded-3xl text-left transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 group">
-    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-        <i data-lucide="trending-up" class="w-6 h-6"></i>
-    </div>
-    <h4 class="font-bold text-slate-900 dark:text-white text-base">Investment & SIP</h4>
-    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Compound interest, SIP projections, and returns.</p>
-</button>
-
-<!-- Tax Calculator Card -->
-<button onclick="switchTab('tax')" class="p-6 bg-white dark:bg-slate-800/80 hover:bg-purple-50/50 dark:hover:bg-purple-950/30 border border-slate-200/80 dark:border-slate-700/80 rounded-3xl text-left transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 group">
-    <div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-        <i data-lucide="receipt" class="w-6 h-6"></i>
-    </div>
-    <h4 class="font-bold text-slate-900 dark:text-white text-base">Tax Calculator</h4>
-    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">GST, HST, and combined sales tax breakdown.</p>
-</button>
-
-<!-- Tip & Split Bill Card -->
-<button onclick="switchTab('tip')" class="p-6 bg-white dark:bg-slate-800/80 hover:bg-purple-50/50 dark:hover:bg-purple-950/30 border border-slate-200/80 dark:border-slate-700/80 rounded-3xl text-left transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 group">
-    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-        <i data-lucide="users" class="w-6 h-6"></i>
-    </div>
-    <h4 class="font-bold text-slate-900 dark:text-white text-base">Tip & Split Bill</h4>
-    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Calculate tips and divide bills easily.</p>
-</button>
 
                     <!-- UNIT CONVERTER PANEL -->
                     <div id="panel-unit" class="calc-panel hidden">
@@ -467,28 +468,29 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- INVESTMENT & SIP CALCULATOR PANEL -->
+                    <div id="panel-investment" class="calc-panel hidden">
+                        <div id="investment-calculator-container">
+                            <!-- Injected dynamically by investment.js -->
+                        </div>
+                    </div>
+
+                    <!-- TAX CALCULATOR PANEL -->
+                    <div id="panel-tax" class="calc-panel hidden">
+                        <div id="tax-calculator-container">
+                            <!-- Injected dynamically by tax.js -->
+                        </div>
+                    </div>
+
+                    <!-- TIP & SPLIT BILL CALCULATOR PANEL -->
+                    <div id="panel-tip" class="calc-panel hidden">
+                        <div id="tip-calculator-container">
+                            <!-- Injected dynamically by tip.js -->
+                        </div>
+                    </div>
+
                 </div>
-
-                <!-- INVESTMENT & SIP CALCULATOR PANEL -->
-<div id="panel-investment" class="calc-panel hidden">
-    <div id="investment-calculator-container">
-        <!-- Injected dynamically by investment.js -->
-    </div>
-</div>
-
-<!-- TAX CALCULATOR PANEL -->
-<div id="panel-tax" class="calc-panel hidden">
-    <div id="tax-calculator-container">
-        <!-- Injected dynamically by tax.js -->
-    </div>
-</div>
-
-<!-- TIP & SPLIT BILL CALCULATOR PANEL -->
-<div id="panel-tip" class="calc-panel hidden">
-    <div id="tip-calculator-container">
-        <!-- Injected dynamically by tip.js -->
-    </div>
-</div>
 
                 <footer class="pt-2 text-center text-[11px] text-slate-400 dark:text-slate-500 font-medium shrink-0">
                     ASG SmartCalc Pro &copy;<span id="footerYear"></span>. Built by /\\/ Designz. All-in-one Web Application
