@@ -339,7 +339,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Input Fields (Defaulted to 0) -->
+                                <!-- Input Fields -->
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <div>
                                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Loan Amount</label>
@@ -361,7 +361,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Action Buttons: Calculate, Reset, and View Schedule Table -->
+                                <!-- Action Buttons -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                                     <button type="button" onclick="calculateEmi()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs uppercase tracking-wider rounded-2xl transition-all shadow-sm">
                                         Calculate EMI
@@ -377,7 +377,7 @@
                                 </div>
                             </div>
 
-                            <!-- Right Column: Modern POS Receipt Layout -->
+                            <!-- Right Column: POS Receipt Layout -->
                             <div id="print-section" class="lg:col-span-5 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col justify-between font-mono relative overflow-hidden">
                                 <div>
                                     <div class="text-center pb-3 mb-3 border-b border-dashed border-slate-200 dark:border-slate-800">
@@ -388,7 +388,6 @@
 
                                     <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Parameters & Breakdown</div>
 
-                                    <!-- Full Input Parameters Summary -->
                                     <div class="space-y-1.5 mb-3 text-xs bg-slate-50 dark:bg-slate-800/40 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-800">
                                         <div class="flex justify-between">
                                             <span class="text-slate-400">Category:</span>
@@ -427,11 +426,6 @@
                                             <span id="emiTotalText" class="text-slate-900 dark:text-white">$0</span>
                                         </div>
                                     </div>
-
-                                    <div class="mt-4 pt-2 border-t border-dashed border-slate-200 dark:border-slate-800 text-center">
-                                        <p class="text-[9px] text-slate-400 tracking-wider">THANK YOU FOR CALCULATING</p>
-                                        <p class="text-[9px] text-purple-600 dark:text-purple-400 font-bold mt-0.5">*** SECURE RECEIPT ***</p>
-                                    </div>
                                 </div>
 
                                 <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 font-sans">
@@ -443,7 +437,6 @@
                                     </button>
                                 </div>
                             </div>
-
                         </div>
 
                         <!-- Amortization Schedule Table Container -->
@@ -451,12 +444,8 @@
                             <div class="flex justify-between items-center mb-3">
                                 <h3 class="font-bold text-xs text-slate-900 dark:text-white">Amortization & Repayment Schedule</h3>
                                 <div class="flex items-center gap-2">
-                                    <button onclick="printScheduleTable()" class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold text-[11px] rounded-lg transition-all flex items-center gap-1">
-                                        <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print
-                                    </button>
-                                    <button onclick="downloadSchedulePDF()" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] rounded-lg transition-all flex items-center gap-1 shadow-sm">
-                                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i> PDF / Canvas
-                                    </button>
+                                    <button onclick="printScheduleTable()" class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] rounded-lg">Print</button>
+                                    <button onclick="downloadSchedulePDF()" class="px-2.5 py-1 bg-purple-600 text-white font-bold text-[11px] rounded-lg">PDF</button>
                                     <button onclick="toggleScheduleModal()" class="text-xs font-bold text-purple-600 hover:underline ml-2">Close</button>
                                 </div>
                             </div>
@@ -470,39 +459,29 @@
                                             <th class="p-2">Balance</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="schedule-table-body" class="divide-y divide-slate-100 dark:divide-slate-700">
-                                        <!-- Dynamic Rows -->
-                                    </tbody>
+                                    <tbody id="schedule-table-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- INVESTMENT & SIP CALCULATOR PANEL -->
+                    <!-- INVESTMENT & SIP PANEL -->
                     <div id="panel-investment" class="calc-panel hidden">
-                        <div id="investment-calculator-container">
-                            <!-- Injected dynamically by investment.js -->
-                        </div>
+                        <div id="investment-calculator-container"></div>
                     </div>
 
-                    <!-- TAX CALCULATOR PANEL -->
+                    <!-- TAX PANEL -->
                     <div id="panel-tax" class="calc-panel hidden">
-                        <div id="tax-calculator-container">
-                            <!-- Injected dynamically by tax.js -->
-                        </div>
+                        <div id="tax-calculator-container"></div>
                     </div>
 
-                    <!-- TIP & SPLIT BILL CALCULATOR PANEL -->
+                    <!-- TIP PANEL -->
                     <div id="panel-tip" class="calc-panel hidden">
-                        <div id="tip-calculator-container">
-                            <!-- Injected dynamically by tip.js -->
-                        </div>
+                        <div id="tip-calculator-container"></div>
                     </div>
 
-                    <!-- HEALTH & FITNESS CALCULATOR PANEL -->
-                    <div id="panel-health" class="calc-panel hidden">
-                        <!-- Injected dynamically by health.js -->
-                    </div>
+                    <!-- HEALTH PANEL -->
+                    <div id="panel-health" class="calc-panel hidden"></div>
 
                 </div>
 
@@ -512,72 +491,6 @@
             </div>
         </main>
     </div>
-
-    <!-- Additional JavaScript helpers for schedule print/PDF download using jsPDF -->
-    <script>
-        function printScheduleTable() {
-            const printContent = document.getElementById('schedule-table-printable').innerHTML;
-            const originalContent = document.body.innerHTML;
-            
-            document.body.innerHTML = `
-                <div style="font-family: sans-serif; padding: 20px;">
-                    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 4px;">ASG SmartCalc Pro - Amortization Schedule</h2>
-                    <p style="font-size: 12px; color: #666; margin-bottom: 16px;">Generated on: ${new Date().toLocaleString()}</p>
-                    ${printContent}
-                </div>
-            `;
-            window.print();
-            document.body.innerHTML = originalContent;
-            window.location.reload();
-        }
-
-        function downloadSchedulePDF() {
-            const originalElement = document.getElementById('schedule-table-printable');
-            if (typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined') {
-                const clone = originalElement.cloneNode(true);
-                clone.style.maxHeight = 'none';
-                clone.style.height = 'auto';
-                clone.style.overflow = 'visible';
-                clone.style.position = 'absolute';
-                clone.style.left = '-9999px';
-                clone.style.top = '0';
-                clone.style.width = originalElement.offsetWidth + 'px';
-                document.body.appendChild(clone);
-
-                html2canvas(clone, { scale: 2, useCORS: true }).then(canvas => {
-                    document.body.removeChild(clone);
-                    const imgData = canvas.toDataURL('image/png');
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF('p', 'mm', 'a4');
-                    
-                    const imgWidth = 190;
-                    const pageHeight = 295; 
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                    let heightLeft = imgHeight;
-                    let position = 10;
-
-                    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-
-                    while (heightLeft >= 0) {
-                        position = heightLeft - imgHeight;
-                        pdf.addPage();
-                        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-                        heightLeft -= pageHeight;
-                    }
-
-                    pdf.save('amortization-schedule.pdf');
-                }).catch(err => {
-                    if (document.body.contains(clone)) {
-                        document.body.removeChild(clone);
-                    }
-                    console.error(err);
-                });
-            } else {
-                window.print();
-            }
-        }
-    </script>
 
     <script type="module" src="./assets/js/app.js"></script>
 </body>
