@@ -1,7 +1,7 @@
 # asg_smartcalc-pro
-# ASG SmartCalc Pro v1.2.3 🧮✨
+# ASG SmartCalc Pro v1.2.2 🧮✨
 
-![Project Version](https://img.shields.io/badge/version-1.2.3%20Pro-purple?style=for-the-badge)
+![Project Version](https://img.shields.io/badge/version-1.2.2%20Pro-purple?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
