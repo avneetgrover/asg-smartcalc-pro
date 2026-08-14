@@ -1,14 +1,13 @@
 import { initUnitConverter } from './modules/unit/unit.js';
 import { initCurrencyCalculator } from './modules/currency/currency.js';
 import { initEmiCalculator } from './modules/emi/emi.js';
-import { initMarketCalculator } from './modules/market/market.js';
 
 const tabs = [
     { id: 'dashboard', name: 'Module Selector', desc: 'Select a tool to begin', icon: 'layout-grid', init: () => {} },
     { id: 'unit', name: 'Unit Converter', desc: 'Convert lengths, weights, and dimensions', icon: 'scale', init: initUnitConverter },
     { id: 'currency', name: 'Currency Exchange', desc: 'Live exchange conversion with swap toggle', icon: 'coins', init: initCurrencyCalculator },
     { id: 'emi', name: 'Loan EMI Calc', desc: 'Amortization, principal & interest breakdown', icon: 'landmark', init: initEmiCalculator },
-    { id: 'market', name: 'World Market & Crypto', desc: 'Live fiat currency exchange rates and crypto market prices', icon: 'globe', init: initMarketCalculator },
+
 ];
 
 function initApp() {
