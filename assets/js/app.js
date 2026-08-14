@@ -1,7 +1,3 @@
-/**
- * ASG SmartCalc Pro v1.2.2 - Main Application Script
- */
-
 import { initUnitConverter } from '../unit/unit.js';
 import { initCurrencyConverter } from '../currency/currency.js';
 import { initEmiCalculator } from '../emi/emi.js';
