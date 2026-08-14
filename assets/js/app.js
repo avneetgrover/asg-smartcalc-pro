@@ -1,13 +1,18 @@
 import { initUnitConverter } from './modules/unit/unit.js';
 import { initCurrencyCalculator } from './modules/currency/currency.js';
 import { initEmiCalculator } from './modules/emi/emi.js';
+import { initInvestmentCalculator } from './modules/investment/investment.js';
+import { initTaxCalculator } from './modules/tax/tax.js';
+import { initTipCalculator } from './modules/tip/tip.js';
 
 const tabs = [
     { id: 'dashboard', name: 'Module Selector', desc: 'Select a tool to begin', icon: 'layout-grid', init: () => {} },
     { id: 'unit', name: 'Unit Converter', desc: 'Convert lengths, weights, and dimensions', icon: 'scale', init: initUnitConverter },
     { id: 'currency', name: 'Currency Exchange', desc: 'Live exchange conversion with swap toggle', icon: 'coins', init: initCurrencyCalculator },
     { id: 'emi', name: 'Loan EMI Calc', desc: 'Amortization, principal & interest breakdown', icon: 'landmark', init: initEmiCalculator },
-
+    { id: 'investment', name: 'Investment & SIP', desc: 'Compound interest, SIP projections, and returns', icon: 'trending-up', init: initInvestmentCalculator },
+    { id: 'tax', name: 'Tax Calculator', desc: 'GST, HST, and combined sales tax breakdown', icon: 'receipt', init: initTaxCalculator },
+    { id: 'tip', name: 'Tip & Split Bill', desc: 'Calculate tips and divide bills easily', icon: 'users', init: initTipCalculator },
 ];
 
 function initApp() {
