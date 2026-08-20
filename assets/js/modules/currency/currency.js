@@ -9,7 +9,7 @@ const currencies = [
     { code: 'SGD', country: 'sg', name: 'SGD - Singapore Dollar' }
 ];
 
-export function initCurrencyCalculator() {
+export function initCurrencyConverter() {
     const fromSelect = document.getElementById('currFrom');
     const toSelect = document.getElementById('currTo');
     const amtInput = document.getElementById('currAmt');
@@ -25,10 +25,10 @@ export function initCurrencyCalculator() {
     fromSelect.value = 'USD';
     toSelect.value = 'INR';
 
-    amtInput.addEventListener('input', calculate);
-    fromSelect.addEventListener('change', () => { updateFlags(); calculate(); });
-    toSelect.addEventListener('change', () => { updateFlags(); calculate(); });
-    swapBtn.addEventListener('click', swap);
+    amtInput?.addEventListener('input', calculate);
+    fromSelect?.addEventListener('change', () => { updateFlags(); calculate(); });
+    toSelect?.addEventListener('change', () => { updateFlags(); calculate(); });
+    swapBtn?.addEventListener('click', swap);
 
     updateFlags();
     calculate();
